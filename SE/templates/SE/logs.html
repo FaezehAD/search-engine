@@ -1,0 +1,171 @@
+{% extends "admin.html" %}
+{% load static %}
+
+{% block title %}
+تاریخچه پرسمان‌ها
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/css/logs_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/logs_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/logs_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+{% block content %}
+
+<table>
+
+    <tr>
+        <th>ردیف</th>
+        <th>نوع جست‌وجو</th>
+        <th>پرسمان</th>
+        <th>تمام این کلمات</th>
+        <th>عین این عبارت</th>
+        <th>یکی از این کلمات</th>
+        <th>بدون این کلمات</th>
+        <th>تاریخ شروع نشر</th>
+        <th>تاریخ پایان نشر</th>
+        <th>شماره مسلسل</th>
+        <th>نوع گزارش</th>
+        <th>افراد همکار</th>
+        <th>جست‌وجو در</th>
+        <th>نتایج</th>
+        <th>زمان</th>
+        <th>جزئیات</th>
+    </tr>
+    
+    {% for log in logs %}
+
+        <tr>
+            <td>
+                {{ forloop.counter }}
+            </td>
+
+            <td>
+                {% if log.is_semantic %}
+                    معنایی
+                {% else %}
+                    واژگانی
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.main_query %}
+                    {{log.main_query}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>                
+                {% if log.and_param %}
+                    {{log.and_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.exact_param %}
+                    {{log.exact_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.or_param %}
+                    {{log.or_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.not_param %}
+                    {{log.not_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.start_year != -1 %}
+                    {{log.start_year}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% if log.end_year != 1000000 %}
+                    {{log.end_year}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            
+            <td>
+                {% if log.serial %}
+                    {{log.serial}} 
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                {% for report_type in log.report_types %}
+                    {{report_type}}
+                    {% if not forloop.last %}
+                        ،
+                    {% endif %}
+                {% endfor %} 
+            </td>
+
+            <td>
+                {% for p in log.report_people %}
+                    {{p}}
+                    {% if not forloop.last %}
+                        ،
+                    {% endif %}
+                {% endfor %}                
+            </td>
+
+            <td>
+                {% for s in log.search_fields %}
+                        {{s}}
+                    {% if not forloop.last %}
+                        ،
+                    {% endif %}
+                {% endfor %} 
+            </td>
+
+            <td>
+                {% if log.timestamp %}
+                    {{log.timestamp}}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>
+                <a href="{% url 'log-page' id=log_id %}">
+                    کلیک کنید
+                </a>
+            </td>
+
+        </tr>
+
+    {% endfor %} 
+</table>
+
+
+
+
+{% endblock content %}
+
+{% block js_files %}
+{% endblock js_files %}

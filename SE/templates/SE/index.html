@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+موتور جست‌وجو
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/css/index_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/index_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/index_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+{% block content %}
+
+
+<a id="main-page" href="{% url 'index-page' %}">
+    موتور جست‌وجو
+</a>
+
+<form id="search-form" required action="{% url 'search-results-page' %}" method="POST">
+    {% csrf_token %}
+    
+    <div class="search">
+        <div id="search-container">
+            <a href="{% url 'advanced-search-page' %}" class="tooltip">
+                <img class="button" src="{% static 'SE/images/plus.svg' %}" alt="" >
+                <span class="tooltiptext">
+                    جست‌وجوی پیشرفته
+                </span>
+            </a>
+            <div>
+                <input type="image" class="button" src="{% static 'SE/images/search.svg' %}" alt="" >
+            </div>
+
+            <select name="options" id="options">
+                <div id="options-container">
+                    <option value="reports">گزارش‌ها</option>
+                    {% comment %}                         
+                    <option value="journals">نشریات</option>
+                    {% endcomment %}
+                </div>
+            </select>
+            
+            <input type="search" autocomplete="off" id="query" name="query" placeholder="جست‌وجو کنید...">
+        </div>
+        <div id="error-container">
+            <img src="{% static 'SE/images/error.svg' %}" alt="">
+            <p>لطفا عبارت مورد نظر را وارد کنید!</p>
+        </div>
+        
+        {% comment %}         
+        <input type="hidden" name="query_param" value="query">
+        <input type="hidden" name="search-resource" value="search-option"> 
+        {% endcomment %}
+    </div>
+</form> 
+
+{% endblock content %}
+
+{% block js_files %}
+<script src="{% static 'SE/js/index.js' %}" type="text/javascript"></script>
+{% endblock js_files %}

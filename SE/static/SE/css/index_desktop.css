@@ -1,0 +1,13 @@
+#main-page {
+  width: 50% !important;
+  height: 11rem !important;
+  margin: 14rem auto 5rem auto !important;
+  border-radius: 2rem !important;
+  font-size: 4.3rem !important;
+}
+
+.search {
+  width: 40% !important;
+}
+
+

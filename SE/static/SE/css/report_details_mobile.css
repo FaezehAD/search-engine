@@ -1,0 +1,179 @@
+@font-face {
+  font-family: "titr";
+  src: url("../../SE/fonts/B-Titr.ttf");
+}
+
+/* #metadata {
+  padding: 1rem 1rem 0 1rem !important;
+} */
+
+#text {
+  padding: 0 1rem 6rem 1rem !important;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+p {
+  font-size: 1.7rem;
+}
+
+#roles {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+#roles > * {
+  width: 50%;
+}
+
+div {
+  font-size: 1.7rem;
+}
+
+#text div {
+  margin-left: 0 !important;
+}
+
+#main-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin: 6rem auto 0 auto;
+}
+
+#department-img img {
+  width: 20rem;
+  height: 20rem;
+  margin-left: 6rem;
+}
+
+article {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 45vh;
+}
+
+
+article .first-col {
+  width: 25% !important;
+}
+
+main .row .first-col {
+  width: 15% !important;
+}
+
+#right {
+  width: 100%;
+  margin-bottom: 3rem;
+}
+
+
+#left-header {
+  width: 100%;
+}
+main a button:hover {
+  cursor: pointer;
+}
+#left-header .row {
+  margin-top: 1rem;
+}
+
+#left {
+  width: 27%;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  background: #e7f2f8;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+#abstract {
+  background: white !important;
+  padding: 0 0 1.5rem 0 !important;
+}
+
+div {
+  font-size: 1.5rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  width: 100%;
+  margin: 0.6rem auto 0.6rem auto;
+}
+
+#roles .row {
+  margin: 0 auto !important;
+}
+
+.first-col {
+  width: 49%;
+}
+
+.second-col {
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+#left #qr-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+#left img {
+  width: 17rem;
+  height: 17rem;
+}
+
+.line {
+  width: 100%;
+  height: 0.25rem;
+  background: rgb(99, 156, 209);
+  margin: 1.1rem auto;
+}
+
+button {
+  width: max-content;
+  background: #05425f;
+  color: white;
+  border-radius: 0.2rem;
+  padding: 0 0.6rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem !important;
+  margin-left: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+button img {
+  height: 1.2rem;
+  width: 1.2rem;
+  margin-right: 0.8rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+main .row {
+  background: #e7f2f8;
+  padding: .5rem;
+  width: 95% !important;
+}
+
+#departments button {
+  color: black !important;
+  background: white !important;
+  border: none !important;
+}

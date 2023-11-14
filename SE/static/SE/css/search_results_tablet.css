@@ -1,0 +1,152 @@
+li article a,
+li article span {
+  font-size: 1.4rem !important;
+}
+
+li article a {
+  padding-left: 2rem;
+}
+
+li article div {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+}
+
+li article p {
+  width: 70%;
+  font-size: 1.6rem !important;
+}
+
+li article {
+  margin-bottom: 3rem;
+}
+
+ul {
+  /* padding-top: 13rem; */
+  margin-right: 3rem;
+  padding-right: 5rem;
+  width: 96vw;
+  list-style: none;
+}
+
+#main-page {
+  width: 15%;
+  height: 4rem;
+  margin: 1rem 8rem 1rem 0;
+  display: flex;
+  justify-content: center;
+  border-radius: 0.8rem;
+}
+
+h1 {
+  font-size: 1.7rem;
+  padding-top: 0.4rem;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: 0;
+}
+
+input[type="search"] {
+  height: 100%;
+  width: 100%;
+  padding: 1.1rem;
+  font-size: 1.7rem;
+  border-radius: 0.7rem 0 0 0.7rem;
+}
+
+#container {
+  width: 5rem;
+  height: 4rem;
+  border-radius: 0 0.7rem 0.7rem 0;
+  padding: 0.3rem;
+  display: inline-block;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchButton {
+  z-index: 10;
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+::placeholder {
+  color: rgb(174, 174, 174);
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: rgb(174, 174, 174);
+}
+
+::-ms-input-placeholder {
+  color: rgb(174, 174, 174);
+}
+
+input[type="checkbox"] {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 5rem;
+  margin-left: 0.8rem;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+#search-container {
+  display: flex;
+}
+
+#error-container img {
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.5rem;
+}
+
+#error-container {
+  display: flex;
+  align-items: center;
+  margin-right: 4.9rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.4rem;
+  opacity: 0;
+  transition: all 0.5s;
+}
+
+#search-section {
+  display: flex;
+  align-items: flex-start;
+  top: 8%;
+  right: 0;
+  width: 100%;
+}
+
+#search-form {
+  margin-top: 1rem;
+  margin-right: 5rem;
+  width: 46%;
+}
+
+main {
+  left: 0;
+  top: 0;
+  width: 20%;
+  margin-top: 17rem;
+}
+
+.hide {
+  opacity: 0 !important;
+}
+
+.first-item {
+  margin-bottom: 1rem;
+}

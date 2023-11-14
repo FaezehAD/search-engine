@@ -1,0 +1,52 @@
+{% extends "admin.html" %}
+{% load static %}
+
+{% block title %}
+موتور جست‌وجو
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/css/settings_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/settings_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/settings_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+{% block content %}
+
+<main>
+    
+    <h3>
+        تنظیمات سامانه
+    </h3>
+
+    <form required novalidate action="{% url 'settings-page' %}" method="POST">
+        {% csrf_token %}
+
+        <div class="alert">
+            <div id="alert-content"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="threshold">حد آستانه جست‌وجو</label>
+            <input type="number" id="threshold" name="threshold" min="1" max="100" value="{{curr_threshold}}" />
+        </div>
+
+        <div class="form-group">
+            <label for="feedback">نمایش دکمه تأیید / رد در صفحه نتایج</label>
+            <input type="checkbox" id="feedback" name="feedback" value="T" 
+            {% if show_feedback == "T" %} checked {% endif %}>
+        </div>
+
+        <input type="submit" value="ذخیره">
+            
+    </form>
+</main>
+
+{% endblock content %}
+
+{% block js_files %}
+<script src="{% static 'SE/js/settings.js' %}" type="text/javascript"></script> 
+{% endblock js_files %}

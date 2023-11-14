@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+جست‌وجوی پیشرفته
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/css/advanced_search_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/advanced_search_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/advanced_search_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+{% block content %}
+
+
+<a id="main-page" href="{% url 'index-page' %}">
+    موتور جست‌وجو
+</a>
+
+<form novalidate id="search-form" required action="{% url 'search-results-page' %}" method="POST">
+    {% csrf_token %}
+
+
+    <div class="search">
+        <div id="search-container">
+            <div>
+                <input type="image" class="button" src="{% static 'SE/images/search.svg' %}" alt="" >
+            </div>
+            
+            <select name="options" id="options">
+                <div id="options-container">
+                        <option value="reports">گزارش‌ها</option>
+                    {% comment %}                                 
+                    <option value="journals">نشریات</option>
+                     {% endcomment %}
+                </div>
+            </select>
+            
+            <input type="search" autocomplete="off" id="query" name="query" placeholder="جست‌وجو کنید...">
+        </div>
+
+    </div>
+    
+    <main>
+        <section>
+            <div class="radio">
+            <input type="radio" id="syntactic-radio" name="search-method" value="1"
+                   {% if syntactic_radio == "1" %} checked {% endif %}
+                   onclick="toggleSearch()">
+            <label for="syntactic-radio">جست‌وجوی واژگانی</label><br>
+            </div>
+
+            <div class="radio">
+                <input type="radio" id="semantic-radio" name="search-method" value="2"
+                       {% if syntactic_radio == "2" %} checked {% endif %}
+                       onclick="toggleSearch()">
+                <label for="semantic-radio">جست‌وجوی معنایی</label>
+            </div>
+
+        </section>
+
+        <section>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="titles-checkbox" name="titles-checkbox" value="3"
+                    {% if titles_checkbox == "3" %}checked{% endif %}>
+                    <label for="titles-checkbox">جست‌وجو در عنوان</label>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="keywords-checkbox" name="keywords-checkbox" value="4"
+                    {% if keywords_checkbox == "4" %}checked{% endif %}>
+                    <label for="keywords-checkbox">جست‌وجو در کلیدواژه&zwnj;ها</label>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="abstracts-checkbox" name="abstracts-checkbox" value="5"
+                    {% if abstracts_checkbox == "5" %}checked{% endif %}>
+                    <label for="abstracts-checkbox">جست‌وجو در چکیده</label>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="bodies-checkbox" name="bodies-checkbox" value="6"
+                    {% if bodies_checkbox == "6" %}checked{% endif %}>
+                    <label for="bodies-checkbox">جست‌وجو در متن</label>
+                </div>
+        </section>
+
+        <section id="year">
+            <div>
+                سال نشر از:
+                <input type="number" id="start-year" name="start-year" min="0" value="" />
+                تا
+                <input type="number" id="end-year" name="end-year" min="0" value="" />
+            </div>
+            <div id="year-error">
+                <img src="{% static 'SE/images/error.svg' %}" alt="">
+                <p id="year-error-content">
+                </p>
+            </div>
+        </section>
+
+        <section id="people-container">
+            اشخاص:
+            <div>
+                <input type="text" autocomplete="off" id="people-1" name="people-1" value="">
+                <div id="plus-container" onclick="addPerson()">
+                    <img src="{% static 'SE/images/plus.svg' %}" alt="" >
+                </div>
+            </div>
+            <input type="text" class="delete" id="people-2" name="people-2" value="">
+            <input type="text" class="delete" id="people-3" name="people-3" value="">
+        </section>
+        
+        <section id="serial-container">
+            <div>
+                شماره مسلسل:
+                <input type="text" autocomplete="off" id="serial" name="serial" value="" />
+            </div>
+
+            <div id="type">
+                نوع:
+
+                <div class="checkbox">
+                    <input type="checkbox" id="supervisory-checkbox" name="supervisory-checkbox" value="7">
+                    <label for="supervisory-checkbox">نظارتی</label>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="legislative-checkbox" name="legislative-checkbox" value="8">
+                    <label for="legislative-checkbox">تقنینی</label>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="strategic-checkbox" name="strategic-checkbox" value="9">
+                    <label for="strategic-checkbox">مطالعات راهبردی</label>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <article>
+        <div class="input-group">
+            <label for="and">
+                تمام این کلمات
+            </label>
+            <input type="text" id="and" name="and" value="">
+        </div>
+
+        <div class="input-group">
+            <label for="exact">
+                عین این عبارت
+            </label>
+            <input type="text" id="exact" name="exact" value="">
+        </div>
+        
+        <div class="input-group">
+            <label for="or">
+                یکی از این کلمات
+            </label>
+            <input type="text" id="or" name="or" value="">
+        </div>
+        
+        <div class="input-group">
+            <label for="not">
+               بدون این کلمات
+            </label>
+            <input type="text" id="not" name="not" value="">
+        </div>
+
+    </article>
+
+    <input type="submit" value="جست‌وجو">
+
+    {% comment %} 
+    <input type="hidden" name="query_param" value="query">
+    <input type="hidden" name="and_param" value="and">
+    <input type="hidden" name="or_param" value="or">
+    <input type="hidden" name="not_param" value="not">
+    <input type="hidden" name="exact_param" value="exact">
+    <input type="hidden" name="search-resource" value="search-option">
+    <input type="hidden" name="people-param" value="people">
+    {% endcomment %}
+
+</form>
+
+<div id="alert-container" class="delete">
+    <div id="alert">
+    لطفا عبارت مورد نظر را وارد کنید!
+    <span class="closebtn" onclick="closeAlert()">&times;</span> 
+    </div>
+</div>
+  
+{% endblock content %}
+
+{% block js_files %}
+    <script src="{% static 'SE/js/advanced_search.js' %}" type="text/javascript"></script> 
+{% endblock js_files %}

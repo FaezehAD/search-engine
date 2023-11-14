@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{article.title}}
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/cssreport_details_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/cssreport_details_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/cssreport_details_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+
+{% block content %}
+<section id="metadata">
+    <span>عنوان:</span>
+    <div>{{article.title}}</div>
+    <br>
+
+    <span>نوع:</span>
+    <div>{{article.type}}</div>
+    <br>
+
+    {% if article.end_date %}
+        <span>تاریخ پایان:</span>
+        <div>{{article.end_date}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.executor %}
+        <span>اجراکننده:</span>
+        <div>{{article.executor}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.serial %}
+        <span>شماره مسلسل:</span>
+        <div>{{article.serial}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.journal_name %}
+        <span>نام نشریه:</span>
+        <div>{{article.journal_name}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.issue %}
+        <span>موضوع:</span>
+        <div>{{article.issue}}</div>
+        <br>
+    {% endif %}
+    
+    {% if article.start_page %}
+        {% if article.end_page %}
+        <span>صفحات:</span>
+            <div>{{article.end_page}}-{{article.start_page}}</div>
+            <br>
+        {% endif %}
+    {% endif %}
+
+    {% if article.volume %}
+        <span>جلد:</span>
+        <div>{{article.volume}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.year %}
+        <span>سال:</span>
+        <div>{{article.year}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.number %}
+        <span>شماره:</span>
+        <div>{{article.number}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.seminar %}
+        <span>سمینار:</span>
+        <div>{{article.seminar}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.cites %}
+        <span>:cites</span>
+        <div>{{article.cites}}</div>
+        <br>
+    {% endif %}
+
+    {% if article.references %}
+        <span>مراجع:</span>
+        <div>{{article.references}}</div>
+        <br>
+    {% endif %}
+
+</section>
+
+<section id="text">
+    {% if article.abstract %}
+        <span>چکیده:</span>
+        <div>{{article.abstract|linebreaks}}</div>
+    <br>
+    {% endif %}
+    
+    {% if article.body %}
+        <span>متن:</span>
+        <div>{{article.body|linebreaks}}</div>
+    {% endif %}
+</section>
+
+{% endblock content %}

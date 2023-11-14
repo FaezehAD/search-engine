@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "titr";
+  src: url("../../SE/fonts/B-Titr.ttf");
+}
+
+main {
+  padding: 4rem;
+  margin-bottom: 3rem;
+}
+
+main p {
+  margin-top: 2rem;
+  color: #062aae;
+  font-size: 1.7rem;
+  font-family: titr;
+}
+
+article a {
+  margin-left: 0.6rem;
+}
+
+article a:nth-of-type(3){
+    text-decoration: none;
+}

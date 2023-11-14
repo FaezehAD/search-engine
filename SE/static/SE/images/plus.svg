@@ -1,0 +1,14 @@
+<svg width="344" height="343"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" overflow="hidden">
+    <defs>
+        <clipPath id="clip0">
+            <rect x="590" y="-7" width="344" height="343"/>
+        </clipPath>
+    </defs>
+    <g clip-path="url(#clip0)" transform="translate(-590 7)">
+        <path d="M268.284 158.219 185.735 158.219 185.735 75.67C185.735 68.072 179.575 61.9118 171.977 61.9118 164.379 61.9118 158.219 68.072 158.219 75.67L158.219 158.219 75.67 158.219C68.072 158.219 61.9118 164.379 61.9118 171.977 61.9118 179.575 68.072 185.735 75.67 185.735L158.219 185.735 158.219 268.284C158.219 275.882 164.379 282.043 171.977 282.043 179.575 282.043 185.735 275.882 185.735 268.284L185.735 185.735 268.284 185.735C275.882 185.735 282.043 179.575 282.043 171.977 282.043 164.379 275.882 158.219 268.284 158.219Z" fill="#FFFFFF" transform="matrix(1.00013 0 0 1 590 -7)"/>
+        <text fill="#FFFFFF" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="5" transform="matrix(3.44 0 0 3.43954 590 389)">Created by Perametade Games</text>
+        <text fill="#FFFFFF" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="5" transform="matrix(3.44 0 0 3.43954 590 406)">from the Noun Project</text>
+    </g>
+</svg>
