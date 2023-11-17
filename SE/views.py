@@ -21,13 +21,14 @@ import datetime
 import pytz
 from persiantools.jdatetime import JalaliDateTime
 import uuid
+from django.core.paginator import Paginator
+
 
 # from django.contrib.auth.forms import UserCreationForm
 
 threshold = config("THRESHOLD")
 show_feedback = config("SHOW_FEEDBACK")
-BASE_URL = config('BASE_URL')
-
+BASE_URL = config("BASE_URL")
 
 
 def index(request):
@@ -41,14 +42,14 @@ def guide(request):
 def get_req_type(request):
     try:
         data = json.load(request)
-        if "date" in data: # sort
+        if "date" in data:  # sort
             return (1, data)
-        elif "is_correct" in data: # feedback
+        elif "is_correct" in data:  # feedback
             return (2, data)
-        elif "result_id" in data: # click
+        elif "result_id" in data:  # click
             return (3, data)
     except Exception:
-        return (4, None) # normal search
+        return (4, None)  # normal search
 
 
 def search_results(request):
@@ -81,7 +82,7 @@ def search_results(request):
             )
         )
 
-    elif req_type == 2: # feedback
+    elif req_type == 2:  # feedback
         result_id = data["result_id"]
         is_correct = data["is_correct"]
         query_id = data["query_id"]
@@ -91,31 +92,28 @@ def search_results(request):
                 "lang": "painless",
                 "params": {
                     "result_id": str(result_id),
-                    "feedback": "T" if is_correct else "F"
-                }
+                    "feedback": "T" if is_correct else "F",
+                },
             }
         }
-        response = requests.post(f"{BASE_URL}logs/_update/{query_id}", json=json_obj)
+        requests.post(f"{BASE_URL}logs/_update/{query_id}", json=json_obj)
         return HttpResponse()
 
-    elif req_type == 3: # click
-        result_id = data["result_id"]        
+    elif req_type == 3:  # click
+        result_id = data["result_id"]
         query_id = data["query_id"]
 
         json_obj = {
             "script": {
                 "source": "for (r in ctx._source.results) { if(r.result_id == params.result_id){r.click = params.click} }",
                 "lang": "painless",
-                "params": {
-                    "result_id": str(result_id),
-                    "click": True
-                }
+                "params": {"result_id": str(result_id), "click": True},
             }
         }
-        response = requests.post(f"{BASE_URL}logs/_update/{query_id}", json=json_obj)
+        requests.post(f"{BASE_URL}logs/_update/{query_id}", json=json_obj)
 
         return HttpResponse()
-    
+
     # now req_type is 4
 
     query = request.POST.get("query")
@@ -133,15 +131,17 @@ def search_results(request):
     if search_method:  # advanced search
         set_checkboxes(checkboxes)
         set_search_method(search_method)
-    
-    serial = verify_serial(convert_persian_number_to_english(request.POST.get("serial", "")))
-        
+
+    serial = verify_serial(
+        convert_persian_number_to_english(request.POST.get("serial", ""))
+    )
+
     start_year = get_int(
-                    convert_persian_number_to_english(request.POST.get("start-year", "")), 
-                    True)
+        convert_persian_number_to_english(request.POST.get("start-year", "")), True
+    )
     end_year = get_int(
-                    convert_persian_number_to_english(request.POST.get("end-year", "")),
-                    False)
+        convert_persian_number_to_english(request.POST.get("end-year", "")), False
+    )
     people_list.append(request.POST.get("people-1", ""))
     people_list.append(request.POST.get("people-2", ""))
     people_list.append(request.POST.get("people-3", ""))
@@ -179,25 +179,25 @@ def search_results(request):
             and_param,
             or_param,
             not_param,
-            exact_param
+            exact_param,
         )
     departments = get_departments_with_number(get_raw_results())
 
     # store log
     report_types = list()
     if strategic == "9":
-        report_types.append("مطالعات راهبردی") 
+        report_types.append("مطالعات راهبردی")
     if legislative == "8":
-        report_types.append("تقنینی") 
+        report_types.append("تقنینی")
     if supervisory == "7":
-        report_types.append("نظارتی") 
+        report_types.append("نظارتی")
     report_people = list()
     for p in people_list:
-        if p is not None and p != '':
+        if p is not None and p != "":
             report_people.append(p)
     search_fields = list()
     search_checkboxes = get_checkboxes()
-    if search_checkboxes[0]=="3":
+    if search_checkboxes[0] == "3":
         search_fields.append("عنوان")
     if search_checkboxes[1] == "4":
         search_fields.append("کلیدواژه")
@@ -208,14 +208,16 @@ def search_results(request):
     results_list = list()
     if results is not None:
         for r in results:
-            results_list.append({
-                "result_id": str(r[0].id),
-                "title": r[0].title,
-                "click": False,
-                "feedback": "N", # True, False, Neutral
-            })
+            results_list.append(
+                {
+                    "result_id": str(r[0].id),
+                    "title": r[0].title,
+                    "click": False,
+                    "feedback": "N",  # True, False, Neutral
+                }
+            )
 
-    curr_time = datetime.datetime.now(pytz.timezone('Asia/Tehran'))
+    curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
     hour = curr_time.hour
     minute = curr_time.minute
     second = curr_time.second
@@ -223,11 +225,11 @@ def search_results(request):
     formatted_date = curr_date.strftime("%Y-%m-%d")
     formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
     curr_timestamp = f"{formatted_date} {formatted_time}"
+    print(curr_timestamp)
     unique_id = str(uuid.uuid4())
     id_without_dash = f"{unique_id[:8]}{unique_id[9:13]}{unique_id[14:18]}{unique_id[19:23]}{unique_id[24:]}"
-    print(f'now in normal condition, id is {id_without_dash}')
     json_obj = {
-        "is_semantic": (search_method=="2"),
+        "is_semantic": (search_method == "2"),
         "main_query": query,
         "and_query": and_param,
         "or_query": or_param,
@@ -242,9 +244,7 @@ def search_results(request):
         "results": results_list,
         "timestamp": curr_timestamp,
     }
-    response = requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", 
-                            json=json_obj,
-                            timeout=30)
+    requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
 
     return render(
         request,
@@ -308,7 +308,13 @@ def report_details(request, id):
     return render(
         request,
         "SE/report_details.html",
-        context=get_report_details_context(identified_report, eitaa_url, image_content, identified_report_departments, index),
+        context=get_report_details_context(
+            identified_report,
+            eitaa_url,
+            image_content,
+            identified_report_departments,
+            index,
+        ),
     )
 
 
@@ -321,9 +327,9 @@ def signin(request):
         password = request.POST.get("pass")
 
         user = None
-        if username=="admin" and password=="nlpadmin1402":
+        if username == config('ADMIN_USERNAME') and password == config('ADMIN_PASSWORD'):
             user = authenticate(username=username, password=password)
-        
+
         if user is not None:
             login(request, user)
             next_url = request.POST.get("next", "/")
@@ -332,7 +338,7 @@ def signin(request):
             messages.error(request, "نام کاربری یا رمز عبور اشتباه است!")
             return redirect("signin-page")
 
-    else: # request.method == "GET"
+    else:  # request.method == "GET"
         return render(request, "SE/signin.html")
 
 
@@ -356,51 +362,118 @@ def settings(request):
         set_key(".env", "THRESHOLD", str(threshold))
         if show_feedback == "T":
             set_key(".env", "SHOW_FEEDBACK", "T")
-        else: 
+        else:
             set_key(".env", "SHOW_FEEDBACK", "F")
-        
+
         return redirect("admin-page")
 
-    return render(request, "SE/settings.html",context={
-        "show_feedback": show_feedback,
-        "curr_threshold": threshold,
-    })
+    return render(
+        request,
+        "SE/settings.html",
+        context={
+            "show_feedback": show_feedback,
+            "curr_threshold": threshold,
+        },
+    )
+
 
 @login_required
 def show_logs(request):
-    query = {
-        'query': {
-            'match_all': {}
-        }
-    }
-    response = requests.get(BASE_URL + 'logs/_search', json=query)
+    if request.method == "POST":
+        user_query = request.POST.get("query")
+        if user_query == "":
+            search_obj = {"query": {"match_all": {}}, "size": 10000}
+        else:
+            search_obj = {
+                "query": {
+                    "query_string": {
+                        "fields": [
+                            "main_query",
+                            "and_query",
+                            "or_query",
+                            "not_query",
+                            "exact_query",
+                            "report_people",
+                        ],
+                        "query": f"*{user_query}*",
+                    }
+                },
+            }
+    else:
+        search_obj = {"query": {"match_all": {}}, "size": 10000}
+    response = requests.get(BASE_URL + "logs/_search", json=search_obj)
     logs = response.json()["hits"]["hits"]
     logs_list = list()
     for l in logs:
-        logs_list.append({
-            "log_id":l["_id"], 
-            "is_semantic" : l["_source"]["is_semantic"],
-            "main_query": l["_source"]["main_query"],
-            "and_query": l["_source"]["and_query"],
-            "or_query": l["_source"]["or_query"],
-            "not_query": l["_source"]["not_query"],
-            "exact_query": l["_source"]["exact_query"],
-            "start_year": l["_source"]["start_year"],
-            "end_year": l["_source"]["end_year"],
-            "serial": l["_source"]["serial"],
-            "report_types": l["_source"]["report_types"],
-            "report_people": l["_source"]["report_people"],
-            "search_fields": l["_source"]["search_fields"],
-            "results": l["_source"]["results"],
-            "timestamp": l["_source"]["timestamp"],
-        })
-    
-    return render(request, "SE/logs.html", context={
-        "logs": logs_list
-    })
+        log_results = l["_source"]["results"]
+        clicked = correct = incorrect = 0
+        for r in log_results:
+            if r["click"] == True:
+                clicked += 1
+            if r["feedback"] == "T":
+                correct += 1
+            elif r["feedback"] == "F":
+                incorrect += 1
+        logs_list.append(
+            {
+                "log_id": l["_id"],
+                "is_semantic": l["_source"]["is_semantic"],
+                "main_query": l["_source"]["main_query"],
+                "and_query": l["_source"]["and_query"],
+                "or_query": l["_source"]["or_query"],
+                "not_query": l["_source"]["not_query"],
+                "exact_query": l["_source"]["exact_query"],
+                "start_year": l["_source"]["start_year"],
+                "end_year": l["_source"]["end_year"],
+                "serial": l["_source"]["serial"],
+                "report_types": l["_source"]["report_types"],
+                "report_people": l["_source"]["report_people"],
+                "search_fields": l["_source"]["search_fields"],
+                "results": log_results,
+                "clicked": clicked,
+                "correct": correct,
+                "incorrect": incorrect,
+                "timestamp": l["_source"]["timestamp"],
+            }
+        )
+    objects_per_page = 10
+    paginator = Paginator(logs_list, objects_per_page)
+    page_number = request.GET.get("page")
+    try:
+        paginated_objects = paginator.page(page_number)
+    except:
+        paginated_objects = paginator.page(1)
+
+    return render(
+        request, "SE/logs.html", context={"paginated_objects": paginated_objects}
+    )
 
 
+@login_required
 def log_details(request, id):
-    return render(request, "SE/log_details.html", context={
-        "logs": logs_list
-    })
+    response = requests.get(f"{BASE_URL}logs/_doc/{id}")
+    l = response.json()
+    print(f'time: {l["_source"]["timestamp"]}')
+    return render(
+        request,
+        "SE/log_details.html",
+        context={
+            "log": {
+                "log_id": l["_id"],
+                "is_semantic": l["_source"]["is_semantic"],
+                "main_query": l["_source"]["main_query"],
+                "and_query": l["_source"]["and_query"],
+                "or_query": l["_source"]["or_query"],
+                "not_query": l["_source"]["not_query"],
+                "exact_query": l["_source"]["exact_query"],
+                "start_year": l["_source"]["start_year"],
+                "end_year": l["_source"]["end_year"],
+                "serial": l["_source"]["serial"],
+                "report_types": l["_source"]["report_types"],
+                "report_people": l["_source"]["report_people"],
+                "search_fields": l["_source"]["search_fields"],
+                "results": l["_source"]["results"],
+                "timestamp": l["_source"]["timestamp"],
+            },
+        },
+    )

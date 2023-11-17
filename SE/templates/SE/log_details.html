@@ -1,0 +1,267 @@
+{% extends "admin.html" %}
+{% load static %}
+
+{% block title %}
+جزئیات تاریخچه پرسمان
+{% endblock title %}
+
+
+
+{% block css_files %}
+<link href="{% static 'SE/css/logs_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/logs_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/logs_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+{% endblock css_files %}
+
+
+{% block content %}
+<main>
+    <div class="rows">
+        <div class="row">
+            <span class="key">
+                پرسمان:
+            </span>
+
+            <span class="value">
+                {% if log.main_query %}
+                    {{log.main_query}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                نوع جست‌وجو:
+            </span>
+
+            <span class="value">
+                {% if log.is_semantic %}
+                    معنایی
+                {% else %}
+                    واژگانی
+                {% endif %}
+            </span>
+
+        </div>
+
+        <div class="row">
+            <span class="key">
+                نوع گزارش:
+            </span>
+
+            <span class="value">
+                {% if log.report_types|length != 0 %}
+                    {% for report_type in log.report_types %}
+                        {{report_type}}
+                        {% if not forloop.last %}
+                            ،
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    -
+                {% endif %}         
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                تاریخ شروع نشر:
+            </span>
+
+            <span class="value">
+                {% if log.start_year != -1 %}
+                    {{log.start_year}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                تاریخ پایان نشر:
+            </span>
+
+            <span class="value">
+                {% if log.start_year != -1 %}
+                    {{log.start_year}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                شماره مسلسل:
+            </span>
+
+            <span class="value">
+                {% if log.serial %}
+                    {{log.serial}} 
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                تمام این کلمات:
+            </span>
+
+            <span class="value">
+                {% if log.and_param %}
+                    {{log.and_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                عین این عبارت:
+            </span>
+
+            <span class="value">
+                {% if log.exact_param %}
+                    {{log.exact_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                یکی از این کلمات:
+            </span>
+
+            <span class="value">
+                {% if log.or_param %}
+                    {{log.or_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                بدون این کلمات:
+            </span>
+
+            <span class="value">
+                {% if log.not_param %}
+                {{log.not_param}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                زمان:
+            </span>
+
+            <span class="value" dir="ltr">
+                {% if log.timestamp %}
+                    {{log.timestamp}}
+                {% else %}
+                    -
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                افراد همکار:
+            </span>
+
+            <span class="value">
+                {% if log.report_people|length != 0 %}
+                    {% for p in log.report_people %}
+                            {{p}}
+                        {% if not forloop.last %}
+                            ،
+                        {% endif %}
+                    {% endfor %}          
+                {% else %}
+                    -
+                {% endif %}         
+
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="key">
+                جست‌وجو در:
+            </span>
+
+            <span class="value">
+                {% for s in log.search_fields %}
+                    {{s}}
+                    {% if not forloop.last %}
+                        ،
+                    {% endif %}
+                {% endfor %} 
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <span class="key">
+            نتایج:
+        </span>
+    </div>
+    
+    <div id="table-container">
+        {% if log.results|length != 0 %}
+            <table>                  
+                <tr>
+                    <th>عنوان</th>
+                    <th class="feedback">بازخورد</th>
+                    <th class="click">کلیک</th>
+                </tr> 
+                {% for r in log.results %}
+                <tr>
+                    <td class="link">
+                        <a href="{% url 'report-detail-page' id=r.result_id %}">
+                            {{r.title}}
+                        </a>
+                    </td>
+                    
+                    <td class="feedback">
+                        {% if r.feedback == "T" %}
+                            <img class="correct_filled" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
+                        {% elif r.feedback == "F" %}
+                            <img class="incorrect_filled" src="{% static 'SE/images/incorrect_filled.svg' %}" alt="">
+                        {% else %}
+                            ثبت نشده
+                        {% endif %}
+                    </td>
+
+                    <td class="click">
+                        {% if r.click %}
+                            <img src="{% static 'SE/images/mouse.svg' %}" alt="">
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+        نتیجه‌ای یافت نشد
+        {% endif %}
+    </div>
+</main>
+
+{% endblock content %}
+
+{% block js_files %}
+{% endblock js_files %}

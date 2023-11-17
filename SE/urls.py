@@ -15,5 +15,5 @@ urlpatterns = [
     path("admin", views.admin_panel, name="admin-page"),
     path("admin/settings", views.settings, name="settings-page"),
     path("admin/logs", views.show_logs, name="logs-page"),
-    path("admin/log/<int:id>", views.log_details, name="log-detail-page"),
+    path("admin/log/<str:id>", views.log_details, name="log-detail-page"),
 ]

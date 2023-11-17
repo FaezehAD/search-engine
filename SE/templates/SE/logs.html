@@ -10,162 +10,134 @@
 {% block css_files %}
 <link href="{% static 'SE/css/logs_mobile.css' %}" rel="stylesheet">
 <link href="{% static 'SE/css/logs_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
-<link href="{% static 'SE/css/logs_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
-{% endblock css_files %}
+<link href="{% static 'SE/css/logs_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">{% endblock css_files %}
 
 
 {% block content %}
 
-<table>
+<main>
 
-    <tr>
-        <th>ردیف</th>
-        <th>نوع جست‌وجو</th>
-        <th>پرسمان</th>
-        <th>تمام این کلمات</th>
-        <th>عین این عبارت</th>
-        <th>یکی از این کلمات</th>
-        <th>بدون این کلمات</th>
-        <th>تاریخ شروع نشر</th>
-        <th>تاریخ پایان نشر</th>
-        <th>شماره مسلسل</th>
-        <th>نوع گزارش</th>
-        <th>افراد همکار</th>
-        <th>جست‌وجو در</th>
-        <th>نتایج</th>
-        <th>زمان</th>
-        <th>جزئیات</th>
-    </tr>
+    <form required action="{% url 'logs-page' %}" method="POST">
+        {% csrf_token %}
+        <input type="search" autocomplete="off" id="query" name="query" placeholder="جست‌وجو کنید...">
+        <input type="submit" value="جست‌وجو">
+        <a href="{% url 'logs-page' %}">نمایش همه داده‌ها</a>
+    </form> 
+
+{% comment %} {% for log in paginated_objects %}
+{{log.clicked}}
+{{log.timestamp}}
+{% endfor %} {% endcomment %}
+
+
+<div id="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th class="sortable">
+                    <p>
+                        پرسمان
+                    </p>
+                    <svg class="svg" width="39" height="39" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" overflow="hidden"><defs><clipPath id="clip0"><rect x="187" y="681" width="39" height="39"/></clipPath></defs><g clip-path="url(#clip0)" transform="translate(-187 -681)"><path d="M9.70401 28.6421 27.4308 10.9148C28.1231 10.2226 28.1231 9.10011 27.4307 8.4078 26.7384 7.71561 25.616 7.71561 24.9237 8.40791L8.45038 24.8816-8.02382 8.4078C-8.71618 7.71561-9.83851 7.71561-10.5308 8.40791-10.877 8.75398-11.05 9.20768-11.05 9.66138-11.05 10.1151-10.877 10.5688-10.5307 10.9149L7.19702 28.6421C7.52949 28.9746 7.98032 29.1614 8.45049 29.1614 8.9206 29.1614 9.37159 28.9746 9.70401 28.6421Z" fill="#FFFFFF" transform="matrix(-1 0 0 1 214.95 681.975)"/></g></svg>
+                </th>
+                <th> کل نتایج</th>
+                <th> نتایج با بازخورد مثبت</th>
+                <th> نتایج با بازخورد منفی</th>
+                <th> نتایج کلیک‌شده</th>
+                <th class="sortable">
+                    <p>
+                        زمان    
+                    </p>
+                    <svg class="svg" width="39" height="39" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" overflow="hidden"><defs><clipPath id="clip0"><rect x="187" y="681" width="39" height="39"/></clipPath></defs><g clip-path="url(#clip0)" transform="translate(-187 -681)"><path d="M9.70401 28.6421 27.4308 10.9148C28.1231 10.2226 28.1231 9.10011 27.4307 8.4078 26.7384 7.71561 25.616 7.71561 24.9237 8.40791L8.45038 24.8816-8.02382 8.4078C-8.71618 7.71561-9.83851 7.71561-10.5308 8.40791-10.877 8.75398-11.05 9.20768-11.05 9.66138-11.05 10.1151-10.877 10.5688-10.5307 10.9149L7.19702 28.6421C7.52949 28.9746 7.98032 29.1614 8.45049 29.1614 8.9206 29.1614 9.37159 28.9746 9.70401 28.6421Z" fill="#FFFFFF" transform="matrix(-1 0 0 1 214.95 681.975)"/></g></svg>
+                </th>
+                <th>جزئیات</th>
+            </tr>
+        </thead>
+        <tbody>          
+            {% for log in paginated_objects %}
+
+                <tr>
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+                    <td>
+                        {% if log.main_query %}
+                            {{log.main_query}}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{log.results|length}}
+                    </td>
+
+                    <td>
+                        {{log.correct}}
+                    </td>
+
+                    <td>
+                        {{log.incorrect}}
+                    </td>
+
+                    <td>
+                        {{log.clicked}}
+                    </td>
+
+                    <td dir="ltr">
+                        {% if log.timestamp %}
+                            {{log.timestamp}}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'log-detail-page' id=log.log_id %}">
+                            کلیک کنید
+                        </a>
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div> 
+
+<div class="pagination">
+    <span class="step-links">
+        {% if paginated_objects.has_previous %}
+            <a href="?page=1">صفحه اول</a>
+            <a href="?page={{ paginated_objects.previous_page_number }}">
+                &laquo;
+                قبل
+            </a>
+        {% endif %}
     
-    {% for log in logs %}
-
-        <tr>
-            <td>
-                {{ forloop.counter }}
-            </td>
-
-            <td>
-                {% if log.is_semantic %}
-                    معنایی
-                {% else %}
-                    واژگانی
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.main_query %}
-                    {{log.main_query}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>                
-                {% if log.and_param %}
-                    {{log.and_param}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.exact_param %}
-                    {{log.exact_param}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.or_param %}
-                    {{log.or_param}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.not_param %}
-                    {{log.not_param}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.start_year != -1 %}
-                    {{log.start_year}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% if log.end_year != 1000000 %}
-                    {{log.end_year}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            
-            <td>
-                {% if log.serial %}
-                    {{log.serial}} 
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                {% for report_type in log.report_types %}
-                    {{report_type}}
-                    {% if not forloop.last %}
-                        ،
-                    {% endif %}
-                {% endfor %} 
-            </td>
-
-            <td>
-                {% for p in log.report_people %}
-                    {{p}}
-                    {% if not forloop.last %}
-                        ،
-                    {% endif %}
-                {% endfor %}                
-            </td>
-
-            <td>
-                {% for s in log.search_fields %}
-                        {{s}}
-                    {% if not forloop.last %}
-                        ،
-                    {% endif %}
-                {% endfor %} 
-            </td>
-
-            <td>
-                {% if log.timestamp %}
-                    {{log.timestamp}}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-
-            <td>
-                <a href="{% url 'log-page' id=log_id %}">
-                    کلیک کنید
-                </a>
-            </td>
-
-        </tr>
-
-    {% endfor %} 
-</table>
-
-
-
+        <span class="current">
+            صفحه
+            {{ paginated_objects.number }}
+            از
+            {{ paginated_objects.paginator.num_pages }}
+        </span>
+    
+        {% if paginated_objects.has_next %}
+            <a href="?page={{ paginated_objects.next_page_number }}">
+                بعد
+                &raquo;
+            </a>
+            <a href="?page={{ paginated_objects.paginator.num_pages }}">صفحه آخر</a>
+        {% endif %}
+    </span>
+</div>
+        
+</main>
 
 {% endblock content %}
 
 {% block js_files %}
+<script src="{% static 'SE/js/logs.js' %}" type="text/javascript"></script>
 {% endblock js_files %}

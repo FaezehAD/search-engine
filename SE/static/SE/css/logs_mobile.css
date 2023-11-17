@@ -1,3 +1,154 @@
-table{
-    margin-top: 12rem;
+main {
+    width: 90vw;
+    margin: 10rem auto 4rem auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 85%;
+}
+
+table td,
+table th {
+    border: 1.5px solid #f2f2f2;
+    padding: 1rem;
+    text-align: center;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+table th {
+    padding-top: .6rem;
+    padding-bottom: .6rem;
+    background-color: #062aae;
+    color: white;
+    /* display: flex; */
+    align-items: center;
+}
+
+.sortable {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.sortable:hover {
+    cursor: pointer;
+}
+
+td img {
+    scale: 0.8;
+}
+
+.feedback,
+.click {
+    width: 9%;
+}
+
+.link a,
+td a {
+    text-decoration: none;
+}
+
+span.key {
+    font-weight: bold;
+}
+
+.row {
+    margin-bottom: 1rem;
+}
+
+.key {
+    margin-left: 1rem;
+}
+
+#table-container,
+form {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+form {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+
+table th svg {
+    scale: 0.5 !important;
+}
+
+.rotate {
+    transform: rotate(180deg) !important;
+}
+
+input[type="search"] {
+    width: 40%;
+    border: 3px solid #2f8ff9;
+    padding: .6rem;
+    font-size: 1.5rem;
+    border-radius: 0.4rem;
+    outline: none;
+    display: inline-block;
+}
+
+input[type="submit"],
+form a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    font-size: 1.5rem;
+    margin-right: 2rem;
+    border: none;
+    background: #2f8ff9;
+    color: white;
+    border-radius: .3rem;
+    height: 3rem;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 1.2rem;
+    width: 1.2rem;
+    background-image: url("../../SE/images/cross.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+form a {
+    background: #74b6fd !important;
+}
+
+form a:hover {
+    background: #062aae !important;
+}
+
+.pagination {
+    margin-top: 4rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination a {
+    text-decoration: none;
+    background: #74b6fd;
+    color: white;
+    padding: .5rem 1rem;
+    border-radius: .4rem;
+    margin: 0 1rem;
+}
+
+.pagination a:hover {
+    background: #062aae !important;
 }
