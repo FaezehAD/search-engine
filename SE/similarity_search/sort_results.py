@@ -31,10 +31,10 @@ def selection_sort(arr, date, asc):
             for j in range(i + 1, n):
                 first_report = arr[j]
                 second_report = arr[min_index]
-                first_year = first_report[0].year
+                first_year = int(first_report[0].publication_date[:4])
                 first_month = int(first_report[0].publication_date[5:7])
                 first_day = int(first_report[0].publication_date[8:])
-                second_year = second_report[0].year
+                second_year = int(second_report[0].publication_date[:4])
                 second_month = int(second_report[0].publication_date[5:7])
                 second_day = int(second_report[0].publication_date[8:])
                 if (

@@ -497,18 +497,17 @@
                     </div>
                 {% endif %}
     
+                {% if report.body_summary %}
+                    <div class="row">
+                        خلاصه استخراجی بر اساس کلیدواژه:
+                        <br>
+                        {{report.body_summary}}
+                    </div>
+                {% endif %}
+
             </main>
 
         </section>
-        {% comment %} 
-        <section id="text">
-            
-            {% if report.body %}
-                <div>
-                    {{report.body}}</div>
-            {% endif %}
-        </section> 
-        {% endcomment %}
     </div>
 
     <div id="left">

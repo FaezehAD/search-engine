@@ -46,130 +46,132 @@ for i in range(0, len(df2)):
             article_year = int(year)
         except ValueError:
             article_year = -1
-    if df2[i]["type"] == "نشریه":
-        article_volume = df2[i]["info"]["volume"]
-        if article_volume == "-" or article_volume == " ":
-            article_volume = None
-        pages = df2[i]["info"]["pages"].strip()
-        if pages == "-" or pages == "---":
-            article_start_page = None
-            article_end_page = None
-        else:
-            first = pages.split("-")[0]
-            if first == "":
-                article_start_page = None
-            else:
-                try:
-                    article_start_page = int(first)
-                except ValueError:
-                    article_start_page = None
-            second = pages.split("-")[1]
-            if second == "":
-                article_end_page = None
-            else:
-                try:
-                    article_end_page = int(second)
-                except ValueError:
-                    article_end_page = None
-        article_issue = df2[i]["info"]["issue"].strip()
-        if article_issue == "-" or article_issue == "":
-            article_issue = None
-        article_name = df2[i]["info"]["Journal"]
-        if article_name == "" or article_name == " ":
-            article_name = None
-        try:
-            article = Article.objects.create(id=df2[i]["id"],
-                                             type=df2[i]["type"],
-                                             title=df2[i]["title"],
-                                             end_date=None,
-                                             executor=None,
-                                             serial=None,
-                                             journal_name=article_name,
-                                             issue=article_issue,
-                                             start_page=article_start_page,
-                                             end_page=article_end_page,
-                                             volume=article_volume,
-                                             year=article_year,
-                                             number=None,
-                                             seminar=None,
-                                             cites=article_cites,
-                                             references=article_references,
-                                             abstract=article_abstract,
-                                             abstract_preprocessed=None,
-                                             abstract_summary=None,
-                                             body=None,
-                                             body_preprocessed=None,
-                                             body_summary=None)
-        except Exception as e:
-            write_exception(e)
-            continue
-    elif df2[i]["type"] == "همایش":
-        article_seminar = df2[i]["info"]["seminar"]
-        if article_seminar == "":
-            article_seminar = None
-        try:
-            article = Article.objects.create(id=df2[i]["id"],
-                                             type=df2[i]["type"],
-                                             title=df2[i]["title"],
-                                             end_date=None,
-                                             executor=None,
-                                             serial=None,
-                                             journal_name=None,
-                                             issue=None,
-                                             start_page=None,
-                                             end_page=None,
-                                             volume=None,
-                                             year=article_year,
-                                             number=int(
-                                                 df2[i]["info"]["number"]),
-                                             seminar=article_seminar,
-                                             cites=article_cites,
-                                             references=article_references,
-                                             abstract=article_abstract,
-                                             abstract_preprocessed=None,
-                                             abstract_summary=None,
-                                             body=None,
-                                             body_preprocessed=None,
-                                             body_summary=None)
-        except Exception as e:
-            write_exception(e)
-            continue
-    elif df2[i]["type"] == "مقاله-پژوهشی" or df2[i]["type"] == "مقاله-نظارتی" or df2[i]["type"] == "مقاله":
-        article_serial = df2[i]["info"]["serial"]
-        if article_serial == "":
-            article_serial = None
-        article_executor = df2[i]["info"]["executor"]
-        if article_executor == "":
-            article_executor = None
-        article_end_date = df2[i]["info"]["endDate"]
-        if article_end_date == "":
-            article_end_date = None
-        try:
-            article = Article.objects.create(id=df2[i]["id"],
-                                             type=df2[i]["type"],
-                                             title=df2[i]["title"],
-                                             end_date=article_end_date,
-                                             executor=article_executor,
-                                             serial=article_serial,
-                                             journal_name=None,
-                                             issue=None,
-                                             start_page=None,
-                                             end_page=None,
-                                             volume=None,
-                                             year=article_year,
-                                             number=None,
-                                             seminar=None,
-                                             cites=article_cites,
-                                             references=article_references,
-                                             abstract=article_abstract,
-                                             abstract_preprocessed=None,
-                                             abstract_summary=None,
-                                             body=None,
-                                             body_preprocessed=None,
-                                             body_summary=None)
-        except Exception as e:
-            write_exception(e)
-            continue
+    if df2[i]["type"] != "همایش":
+        continue
+
+    article_seminar = df2[i]["info"]["seminar"]
+    if article_seminar == "":
+        article_seminar = None
+    try:
+        article = Article.objects.create(id=df2[i]["id"],
+                                            article_type=df2[i]["type"],
+                                            title=df2[i]["title"],
+                                            end_date=None,
+                                            executor=None,
+                                            serial=None,
+                                            journal_name=None,
+                                            issue=None,
+                                            start_page=None,
+                                            end_page=None,
+                                            volume=None,
+                                            year=article_year,
+                                            number=int(
+                                                df2[i]["info"]["number"]),
+                                            seminar=article_seminar,
+                                            cites=article_cites,
+                                            references=article_references,
+                                            abstract=article_abstract,
+                                            abstract_preprocessed=None,
+                                            abstract_summary=None,
+                                            body=None,
+                                            body_preprocessed=None,
+                                            body_summary=None)
+    except Exception as e:
+        write_exception(e)
+        continue
+    # elif df2[i]["type"] == "نشریه":
+    #     article_volume = df2[i]["info"]["volume"]
+    #     if article_volume == "-" or article_volume == " ":
+    #         article_volume = None
+    #     pages = df2[i]["info"]["pages"].strip()
+    #     if pages == "-" or pages == "---":
+    #         article_start_page = None
+    #         article_end_page = None
+    #     else:
+    #         first = pages.split("-")[0]
+    #         if first == "":
+    #             article_start_page = None
+    #         else:
+    #             try:
+    #                 article_start_page = int(first)
+    #             except ValueError:
+    #                 article_start_page = None
+    #         second = pages.split("-")[1]
+    #         if second == "":
+    #             article_end_page = None
+    #         else:
+    #             try:
+    #                 article_end_page = int(second)
+    #             except ValueError:
+    #                 article_end_page = None
+    #     article_issue = df2[i]["info"]["issue"].strip()
+    #     if article_issue == "-" or article_issue == "":
+    #         article_issue = None
+    #     article_name = df2[i]["info"]["Journal"]
+    #     if article_name == "" or article_name == " ":
+    #         article_name = None
+    #     try:
+    #         article = Article.objects.create(id=df2[i]["id"],
+    #                                          article_type=df2[i]["type"],
+    #                                          title=df2[i]["title"],
+    #                                          end_date=None,
+    #                                          executor=None,
+    #                                          serial=None,
+    #                                          journal_name=article_name,
+    #                                          issue=article_issue,
+    #                                          start_page=article_start_page,
+    #                                          end_page=article_end_page,
+    #                                          volume=article_volume,
+    #                                          year=article_year,
+    #                                          number=None,
+    #                                          seminar=None,
+    #                                          cites=article_cites,
+    #                                          references=article_references,
+    #                                          abstract=article_abstract,
+    #                                          abstract_preprocessed=None,
+    #                                          abstract_summary=None,
+    #                                          body=None,
+    #                                          body_preprocessed=None,
+    #                                          body_summary=None)
+    #     except Exception as e:
+    #         write_exception(e)
+    #         continue
+    # elif df2[i]["type"] == "مقاله-پژوهشی" or df2[i]["type"] == "مقاله-نظارتی" or df2[i]["type"] == "مقاله":
+    #     article_serial = df2[i]["info"]["serial"]
+    #     if article_serial == "":
+    #         article_serial = None
+    #     article_executor = df2[i]["info"]["executor"]
+    #     if article_executor == "":
+    #         article_executor = None
+    #     article_end_date = df2[i]["info"]["endDate"]
+    #     if article_end_date == "":
+    #         article_end_date = None
+    #     try:
+    #         article = Article.objects.create(id=df2[i]["id"],
+    #                                          article_type=df2[i]["type"],
+    #                                          title=df2[i]["title"],
+    #                                          end_date=article_end_date,
+    #                                          executor=article_executor,
+    #                                          serial=article_serial,
+    #                                          journal_name=None,
+    #                                          issue=None,
+    #                                          start_page=None,
+    #                                          end_page=None,
+    #                                          volume=None,
+    #                                          year=article_year,
+    #                                          number=None,
+    #                                          seminar=None,
+    #                                          cites=article_cites,
+    #                                          references=article_references,
+    #                                          abstract=article_abstract,
+    #                                          abstract_preprocessed=None,
+    #                                          abstract_summary=None,
+    #                                          body=None,
+    #                                          body_preprocessed=None,
+    #                                          body_summary=None)
+    #     except Exception as e:
+    #         write_exception(e)
+    #         continue
     authors_list = df2[i]["authors"]
     for author_name in authors_list:
         if author_name != "":

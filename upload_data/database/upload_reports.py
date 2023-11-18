@@ -3,13 +3,6 @@ from SE.models import *
 import os
 import re
 
-ids = set()
-for i in range(0, len(df2)):
-    ids.add(df2[i]["ID"])
-
-ids_list = list()
-for i in range(0, len(df2)):
-    ids_list.append(df2[i]["ID"])
 
 
 def clean_string(str):
@@ -30,8 +23,17 @@ for filename in os.listdir(directory):
         doc_dict[clean_filename] = filename
     doc_list.append(clean_filename)
 
-df = pd.read_json("./data_text/report/info.json")
+# df = pd.read_json("./data_text/report/info.json")
+df = pd.read_json("./data_text/report/one.json")
 df2 = df.to_dict("records")
+
+ids = set()
+for i in range(0, len(df2)):
+    ids.add(df2[i]["ID"])
+
+ids_list = list()
+for i in range(0, len(df2)):
+    ids_list.append(df2[i]["ID"])
 
 with open("./upload_data/database/report_exceptions.txt", "w") as exceptions:
     exceptions.write("")
@@ -151,7 +153,7 @@ for i in range(0, len(df2)):
     if (report_abstract is None and report_body is None) or (
             report_abstract is not None and len(report_abstract) > limit_length):
         with open("./upload_data/database/empty_abstract_and_body.txt", "a") as exceptions:
-            exceptions.write(f"{df2[i]["ID"]}\n")
+            exceptions.write(f"{df2[i]['ID']}\n")
         continue
     try:
         r_type = df2[i]["Info"]["نوع"]

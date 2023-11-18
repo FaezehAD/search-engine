@@ -72,7 +72,7 @@ def get_date_ascending():
     raw_results = get_raw_results()
     if raw_results is None:
         return (False, None)
-    is_available, results = sort_results_date(raw_results, True, True)
+    is_available, results = sort_results_date(raw_results, is_report=True, asc=True)
     return (is_available, results)
 
 
@@ -80,7 +80,7 @@ def get_date_descending():
     raw_results = get_raw_results()
     if raw_results is None:
         return (False, None)
-    is_available, results = sort_results_date(raw_results, True, False)
+    is_available, results = sort_results_date(raw_results, is_report=True, asc=False)
     return (is_available, results)
 
 
