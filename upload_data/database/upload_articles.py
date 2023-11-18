@@ -2,7 +2,8 @@ import pandas as pd
 from SE.models import *
 
 
-df = pd.read_json("./data_text/AAoutput_04-08 15-17-26.json")
+# df = pd.read_json("./data_text/article/AAoutput_04-08 15-17-26.json")
+df = pd.read_json("./data_text/article/new_set.json")
 df2 = df.to_dict("records")
 
 with open("./upload_data/database/article_exceptions.txt", "w") as exceptions:
@@ -21,7 +22,6 @@ def get_pesian_phrase(keyword):
         phrase = PersianPhrase.objects.create(value=keyword)
     return phrase
 
-
 for i in range(0, len(df2)):
     article_cites = df2[i]["cites"]
     if (article_cites == "ثبت نشده است." or article_cites == "ثبت نشده است" or
@@ -36,8 +36,7 @@ for i in range(0, len(df2)):
         article_abstract == "لطفا برای مشاهده چکیده به متن کامل (pdf) مراجعه فرمایید." or
         article_abstract == "متن کامل این مقاله به زبان انگلیسی می باشد, لطفا برای مشاهده متن کامل مقاله به بخش انگلیسی مراجعه فرمایید.لطفا برای مشاهده متن کامل این مقاله اینجا را کلیک کنید" or
             article_abstract == ""):
-        article_abstract = None
-        continue
+        continue # abstract is none!
     year = df2[i]["info"]["year"]
     if year == "":
         article_year = -1
@@ -46,12 +45,14 @@ for i in range(0, len(df2)):
             article_year = int(year)
         except ValueError:
             article_year = -1
-    if df2[i]["type"] != "همایش":
-        continue
-
     article_seminar = df2[i]["info"]["seminar"]
     if article_seminar == "":
         article_seminar = None
+    article_number = df2[i]["info"]["number"]
+    if article_number == "":
+        article_number = None
+    else:
+        article_number = int(article_number)
     try:
         article = Article.objects.create(id=df2[i]["id"],
                                             article_type=df2[i]["type"],
@@ -65,8 +66,7 @@ for i in range(0, len(df2)):
                                             end_page=None,
                                             volume=None,
                                             year=article_year,
-                                            number=int(
-                                                df2[i]["info"]["number"]),
+                                            number=article_number,
                                             seminar=article_seminar,
                                             cites=article_cites,
                                             references=article_references,
@@ -180,17 +180,21 @@ for i in range(0, len(df2)):
             except Person.DoesNotExist:
                 author = Person.objects.create(name=author_name)
             article.authors.add(author)
-    keywords = df2[i]["keywords"]
-    if keywords != "ثبت نشده است" and keywords != "ثبت نشده است." and keywords != "":
-        if " _ " in keywords:
-            splitted_keywords = keywords.split(" _ ")
-            end_range = len(splitted_keywords) - 1
-        elif "|" in keywords:
-            splitted_keywords = keywords.split("|")
-            end_range = len(splitted_keywords)
-        else:
-            splitted_keywords = keywords.split(" ")
-            end_range = len(splitted_keywords)
-        for i in range(0, end_range):
-            keyword = splitted_keywords[i]
-            article.persian_keywords.add(get_pesian_phrase(keyword))
+    # keywords = df2[i]["keywords"]
+    # if keywords != "ثبت نشده است" and keywords != "ثبت نشده است." and keywords != "":
+    #     if " _ " in keywords:
+    #         splitted_keywords = keywords.split(" _ ")
+    #         end_range = len(splitted_keywords) - 1
+    #     elif "|" in keywords:
+    #         splitted_keywords = keywords.split("|")
+    #         end_range = len(splitted_keywords)
+    #     else:
+    #         splitted_keywords = keywords.split(" ")
+    #         end_range = len(splitted_keywords)
+    #     for i in range(0, end_range):
+    #         keyword = splitted_keywords[i]
+    #         article.persian_keywords.add(get_pesian_phrase(keyword))
+
+print('finish!')
+
+

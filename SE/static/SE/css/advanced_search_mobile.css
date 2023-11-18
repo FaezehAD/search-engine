@@ -397,6 +397,6 @@ form {
 #options:hover,
 #options option:hover,
 #search-container div:hover {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 

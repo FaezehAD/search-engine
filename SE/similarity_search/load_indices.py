@@ -14,3 +14,8 @@ def load_report_index(index_type):
     index = faiss.read_index(
         f"./SE/embeddings/faiss_report_{index_type}_index.index")
     return index
+
+def load_article_index(index_type):
+    index = faiss.read_index(
+        f"./SE/embeddings/faiss_article_{index_type}_index.index")
+    return index

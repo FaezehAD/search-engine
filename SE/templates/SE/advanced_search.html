@@ -24,7 +24,6 @@
 <form novalidate id="search-form" required action="{% url 'search-results-page' %}" method="POST">
     {% csrf_token %}
 
-
     <div class="search">
         <div id="search-container">
             <div>
@@ -33,10 +32,13 @@
             
             <select name="options" id="options">
                 <div id="options-container">
-                        <option value="reports">گزارش‌ها</option>
-                    {% comment %}                                 
-                    <option value="journals">نشریات</option>
-                     {% endcomment %}
+                    {% if option == "report"%}
+                        <option value="report">گزارش‌ها</option>
+                        <option value="article">مقالات</option>
+                    {% else %}
+                        <option value="article">مقالات</option>
+                        <option value="report">گزارش‌ها</option>
+                    {% endif %}        
                 </div>
             </select>
             
@@ -177,16 +179,6 @@
     </article>
 
     <input type="submit" value="جست‌وجو">
-
-    {% comment %} 
-    <input type="hidden" name="query_param" value="query">
-    <input type="hidden" name="and_param" value="and">
-    <input type="hidden" name="or_param" value="or">
-    <input type="hidden" name="not_param" value="not">
-    <input type="hidden" name="exact_param" value="exact">
-    <input type="hidden" name="search-resource" value="search-option">
-    <input type="hidden" name="people-param" value="people">
-    {% endcomment %}
 
 </form>
 

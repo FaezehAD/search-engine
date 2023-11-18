@@ -8,110 +8,187 @@
 
 
 {% block css_files %}
-<link href="{% static 'SE/cssreport_details_mobile.css' %}" rel="stylesheet">
-<link href="{% static 'SE/cssreport_details_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
-<link href="{% static 'SE/cssreport_details_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+<link href="{% static 'SE/css/result_details_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/result_details_tablet.css' %}" rel="stylesheet" media="screen and (min-width  768px)">
+<link href="{% static 'SE/css/result_details_desktop.css' %}" rel="stylesheet" media="screen and (min-width  992px)">
 {% endblock css_files %}
 
 
 
 {% block content %}
-<section id="metadata">
-    <span>عنوان:</span>
-    <div>{{article.title}}</div>
-    <br>
 
-    <span>نوع:</span>
-    <div>{{article.type}}</div>
-    <br>
 
-    {% if article.end_date %}
-        <span>تاریخ پایان:</span>
-        <div>{{article.end_date}}</div>
-        <br>
-    {% endif %}
+<div id="loader-cotainer"></div>
+<div class="loader" id="loader"></div>
 
-    {% if article.executor %}
-        <span>اجراکننده:</span>
-        <div>{{article.executor}}</div>
-        <br>
-    {% endif %}
+<div id="main-container">
+    <div id="right" style="padding: 7rem !important;">        
 
-    {% if article.serial %}
-        <span>شماره مسلسل:</span>
-        <div>{{article.serial}}</div>
-        <br>
-    {% endif %}
+        <section id="metadata">
+            <div class="row">
+                <div class="first-col">
+                    عنوان:
+                </div>
+                <div class="second-col" id="departments">
+                    {{article.title}}
+                </div>
+            </div>
 
-    {% if article.journal_name %}
-        <span>نام نشریه:</span>
-        <div>{{article.journal_name}}</div>
-        <br>
-    {% endif %}
+            <div class="row">
+                    <div class="first-col">
+                    نوع:
+                </div>
+                <div class="second-col">
+                    {{article.article_type}}
+                </div>
+            </div>
 
-    {% if article.issue %}
-        <span>موضوع:</span>
-        <div>{{article.issue}}</div>
-        <br>
-    {% endif %}
+            
+            {% if authors %}
+                <div class="row">
+                    <div class="first-col">
+                        نویسندگان:
+                    </div>
+                    <div class="second-col">
+                        {% for author in authors %}
+                            {{author.name}}
+                            {% if not forloop.last %}
+                                -
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+{% comment %} 
+            {% if article.executor %}
+                <span>اجراکننده:</span>
+                <div>{{article.executor}}</div>
+                <br>
+            {% endif %}
+
+            {% if article.serial %}
+                <span>شماره مسلسل:</span>
+                <div>{{article.serial}}</div>
+                <br>
+            {% endif %}
+
+            {% if article.journal_name %}
+                <span>نام نشریه:</span>
+                <div>{{article.journal_name}}</div>
+                <br>
+            {% endif %}
+
+            {% if article.issue %}
+                <span>موضوع:</span>
+                <div>{{article.issue}}</div>
+                <br>
+            {% endif %}
+            
+            {% if article.start_page %}
+                {% if article.end_page %}
+                <span>صفحات:</span>
+                    <div>{{article.end_page}}-{{article.start_page}}</div>
+                    <br>
+                {% endif %}
+            {% endif %}
+
+            {% if article.volume %}
+                <span>جلد:</span>
+                <div>{{article.volume}}</div>
+                <br>
+            {% endif %}
+
+            {% if article.number %}
+                <span>شماره:</span>
+                <div>{{article.number}}</div>
+                <br>
+            {% endif %}       
+ {% endcomment %}
+
+        </section>
+    </div>
+    <div id="left">
+        <p>
+            جزئیات مقاله
+        </p>
+        <div class="line"></div>
     
-    {% if article.start_page %}
-        {% if article.end_page %}
-        <span>صفحات:</span>
-            <div>{{article.end_page}}-{{article.start_page}}</div>
-            <br>
+        {% if article.end_date %}
+        <div class="row">
+            <div class="first-col">
+                تاریخ پایان:
+            </div>
+            <div class="second-col">
+                {{article.end_date}}
+            </div>
+        </div>
         {% endif %}
-    {% endif %}
 
-    {% if article.volume %}
-        <span>جلد:</span>
-        <div>{{article.volume}}</div>
-        <br>
-    {% endif %}
+        {% if article.year %}
+            <div class="row">
+                <div class="first-col">
+                    سال:
+                </div>
+                <div class="second-col">
+                    {{article.year}}
+                </div>
+            </div>
+        {% endif %}
 
-    {% if article.year %}
-        <span>سال:</span>
-        <div>{{article.year}}</div>
-        <br>
-    {% endif %}
+        {% if article.seminar %}
+            <div class="row">
+                <div class="first-col">
+                    سمینار:
+                </div>
+                <div class="second-col">
+                    {{article.seminar}}
+                </div>
+            </div>
+        {% endif %}
 
-    {% if article.number %}
-        <span>شماره:</span>
-        <div>{{article.number}}</div>
-        <br>
-    {% endif %}
+        {% if article.cites %}
+            <div class="row">
+                <div class="first-col">
+                    ارجاعات:
+                </div>
+                <div class="second-col">
+                    {{article.cites}}
+                </div>
+            </div>
+        {% endif %}
 
-    {% if article.seminar %}
-        <span>سمینار:</span>
-        <div>{{article.seminar}}</div>
-        <br>
-    {% endif %}
+        {% if article.references %}
+            <div class="row">
+                <div class="first-col">
+                    منابع:
+                </div>
+                <div class="second-col">
+                    {{article.references}}
+                </div>
+            </div>
+        {% endif %}
 
-    {% if article.cites %}
-        <span>:cites</span>
-        <div>{{article.cites}}</div>
-        <br>
-    {% endif %}
+    </div>
+</div>
 
-    {% if article.references %}
-        <span>مراجع:</span>
-        <div>{{article.references}}</div>
-        <br>
-    {% endif %}
-
-</section>
-
-<section id="text">
+<main>
     {% if article.abstract %}
-        <span>چکیده:</span>
-        <div>{{article.abstract|linebreaks}}</div>
-    <br>
+        <div class="row">
+            <div class="first-col">
+                چکیده:
+            </div>
+            <div class="second-col">
+                {{article.abstract}}
+            </div>
+        </div>
     {% endif %}
-    
-    {% if article.body %}
-        <span>متن:</span>
-        <div>{{article.body|linebreaks}}</div>
-    {% endif %}
-</section>
+</main>
 
 {% endblock content %}
+
+
+
+{% block js_files %}
+    <script src="{% static 'SE/js/result-details.js' %}" type="text/javascript"></script>
+{% endblock js_files %}

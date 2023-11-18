@@ -1,7 +1,8 @@
 from SE.models import *
 from .utils import *
 
-def find_img_index(report_departments,departments):
+
+def find_img_index(report_departments, departments):
     index = "4"
     for d in report_departments:
         d_name = d.name.strip()
@@ -56,7 +57,9 @@ def find_img_index(report_departments,departments):
     return index
 
 
-def get_report_details_context(identified_report, eitaa_url, image_content, departments, index):
+def get_report_details_context(
+    identified_report, eitaa_url, image_content, departments, index
+):
     return {
         "report": identified_report,
         "persian_keywords": identified_report.persian_keywords.all(),
@@ -184,40 +187,7 @@ def get_report_people(report):
     return report_people
 
 
-def verify_people(results, people_list):
-    if results is None:
-        return None
-    at_least_one = False
-    if people_list is not None:
-        for people in people_list:
-            if people is not None and people != "":
-                at_least_one = True
-                break
-    if not at_least_one:
-        return results
-    length = len(results)
-    i = 0
-    while i < length:
-        person_exists = False
-        report_people = get_report_people(results[i][0])  # 2D array
-        for result_list in report_people:
-            for p in result_list:
-                for person in people_list:
-                    if person is not None and person != "":
-                        if person.strip() in p.name:
-                            person_exists = True
-                            break
-        if not person_exists:
-            results.pop(i)
-            i = i - 1
-            length = length - 1
-        i = i + 1
-    if len(results) == 0:
-        return None
-    return results
-
-
-def get_people_filter(person_name):
+def get_report_people_filter(person_name):
     report_people = list()
     report_people.append(
         list(Report.objects.filter(commenters__name__contains=person_name))
@@ -391,37 +361,12 @@ def get_result_departments(result):
     return departments
 
 
-def get_details(result):
+def get_report_details(result):
     return (
         result.persian_keywords.all(),
         result.english_keywords.all(),
         get_result_departments(result),
     )
-
-
-def get_people(people_list, k):
-    at_least_one = False
-    if people_list is not None:
-        for people in people_list:
-            if people is not None and people != "":
-                at_least_one = True
-                break
-    if not at_least_one:
-        return None
-    results = list()
-    for people in people_list:
-        if people is not None and people != "":
-            results.append(get_people_filter(people))
-    final_results = list()
-    for r in results[0]:
-        for report in r:
-            persian_keywords, english_keywords, departments = get_details(report)
-            final_results.append(
-                (report, 200, persian_keywords, english_keywords, departments)
-            )
-    if len(final_results) == 0:
-        return None
-    return final_results[0:k]
 
 
 def verify_types(results, supervisory, legislative, strategic):
@@ -458,4 +403,3 @@ def verify_types(results, supervisory, legislative, strategic):
     if len(results) == 0:
         return None
     return results
-

@@ -38,10 +38,13 @@
 
             <select name="options" id="options">
                 <div id="options-container">
-                    <option value="reports">گزارش‌ها</option>
-                    {% comment %}                         
-                    <option value="journals">نشریات</option>
-                    {% endcomment %}
+                    {% if option == "report"%}
+                        <option value="report">گزارش‌ها</option>
+                        <option value="article">مقالات</option>
+                    {% else %}
+                        <option value="article">مقالات</option>
+                        <option value="report">گزارش‌ها</option>
+                    {% endif %}        
                 </div>
             </select>
             

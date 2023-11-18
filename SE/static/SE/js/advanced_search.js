@@ -1,9 +1,8 @@
-const optionMenu = document.querySelector(".select-menu"),
-  yearContainer = document.getElementById("year-error"),
+const yearContainer = document.getElementById("year-error"),
   yearErrorContent = document.getElementById("year-error-content"),
   startYear = document.getElementById("start-year"),
   endYear = document.getElementById("end-year"),
-  article = document.querySelector("article"),
+  andOrContainer = document.querySelector("article"),
   semanticRadio = document.getElementById("semantic-radio"),
   form = document.querySelector("form"),
   searchInput = document.getElementById("query"),
@@ -17,7 +16,43 @@ const optionMenu = document.querySelector(".select-menu"),
   people2 = document.getElementById("people-2"),
   people3 = document.getElementById("people-3"),
   plusContainer = document.getElementById("plus-container"),
-  bodiesCheckbox = document.getElementById("bodies-checkbox");
+  keywordsCheckbox = document.getElementById("keywords-checkbox"),
+  abstractCheckbox = document.getElementById("abstracts-checkbox"),
+  bodiesCheckbox = document.getElementById("bodies-checkbox"),
+  serialContainer = document.getElementById("serial-container"),
+  selectElement = document.getElementById("options");
+
+function disableCheckboxes() {
+  var selectedValue = selectElement.value;
+  if (selectedValue == 'article' && semanticRadio.checked) {
+    keywordsCheckbox.checked = false;
+    abstractCheckbox.checked = false;
+    bodiesCheckbox.checked = false;
+    keywordsCheckbox.disabled = true;
+    abstractCheckbox.disabled = true;
+    bodiesCheckbox.disabled = true;
+  } else {
+    keywordsCheckbox.disabled = false;
+    abstractCheckbox.disabled = false;
+    bodiesCheckbox.disabled = false;
+  }
+}
+
+function handleSelectChange() {
+  var selectedValue = selectElement.value;
+  if (selectedValue == 'report') {
+    if (serialContainer.classList.contains("delete")) {
+      serialContainer.classList.remove("delete");
+    }
+  } else if (selectedValue == 'article') {
+    if (!serialContainer.classList.contains("delete")) {
+      serialContainer.classList.add("delete");
+    }
+  }
+  disableCheckboxes();
+}
+
+selectElement.addEventListener("change", handleSelectChange);
 
 function closeAlert() {
   alertContainer.classList.add("delete");
@@ -75,16 +110,15 @@ form.addEventListener("submit", function (event) {
 
 function toggleSearch() {
   if (semanticRadio.checked) {
-    article.classList.add("delete");
+    andOrContainer.classList.add("delete");
     // bodiesCheckbox.disabled = true;
     // bodiesCheckbox.checked = false;
   } else {
-    article.classList.remove("delete");
+    andOrContainer.classList.remove("delete");
     // bodiesCheckbox.disabled = false;
   }
+  disableCheckboxes();
 }
-
-window.addEventListener("load", toggleSearch);
 
 function addPerson() {
   if (people2.classList.contains("delete")) {
@@ -94,3 +128,8 @@ function addPerson() {
     plusContainer.classList.add("delete");
   }
 }
+
+window.addEventListener("load", function () {
+  toggleSearch();
+  handleSelectChange();
+});

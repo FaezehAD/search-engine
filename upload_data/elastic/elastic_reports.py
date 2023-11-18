@@ -11,13 +11,6 @@ es = Elasticsearch(
     timeout=30,
 )
 
-# es = Elasticsearch(
-#     hosts=["http://localhost:9200"],
-#     basic_auth=(config("ELK_USER"), config("ELK_PASSWORD")),
-#     verify_certs=False,
-#     timeout=30,
-# )
-
 if es.ping():
     print("Connected!")
 else:

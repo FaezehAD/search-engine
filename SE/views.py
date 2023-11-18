@@ -32,7 +32,11 @@ BASE_URL = config("BASE_URL")
 
 
 def index(request):
-    return render(request, "SE/index.html")
+    return render(
+        request,
+        "SE/index.html",
+        context={"option": get_option()},
+    )
 
 
 def guide(request):
@@ -78,6 +82,7 @@ def search_results(request):
                 context={
                     "results": results,
                     "is_available": is_available,
+                    "option": get_option(),
                 },
             )
         )
@@ -118,6 +123,8 @@ def search_results(request):
 
     query = request.POST.get("query")
     option = request.POST.get("options")
+    print(f"option: {option}")
+    set_option(option)
     search_method = request.POST.get("search-method")
     people_list = list()
     start_year = end_year = -1
@@ -181,8 +188,10 @@ def search_results(request):
             not_param,
             exact_param,
         )
-    departments = get_departments_with_number(get_raw_results())
-
+    if option == "report":
+        departments = get_departments_with_number(get_raw_results())
+    else:
+        departments = list()
     # store log
     report_types = list()
     if strategic == "9":
@@ -256,6 +265,7 @@ def search_results(request):
             "departments": departments,
             "show_feedback": config("SHOW_FEEDBACK"),
             "query_id": id_without_dash,
+            "option": option,
         },
     )
 
@@ -271,6 +281,7 @@ def advanced_search(request):
             "abstracts_checkbox": checkboxes[2],
             "bodies_checkbox": checkboxes[3],
             "syntactic_radio": checkboxes[4],
+            "option": get_option(),
         },
     )
 
@@ -327,7 +338,9 @@ def signin(request):
         password = request.POST.get("pass")
 
         user = None
-        if username == config('ADMIN_USERNAME') and password == config('ADMIN_PASSWORD'):
+        if username == config("ADMIN_USERNAME") and password == config(
+            "ADMIN_PASSWORD"
+        ):
             user = authenticate(username=username, password=password)
 
         if user is not None:

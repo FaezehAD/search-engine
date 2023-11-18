@@ -389,6 +389,7 @@ button {
   font-size: 1.5rem;
   background: #9ee6fe;
   /* color: white; */
+  font-weight: bold;
 }
 
 button img {

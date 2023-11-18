@@ -38,10 +38,13 @@
                     
                     <select name="options" id="options">
                         <div id="options-container">
-                                <option value="reports">گزارش‌ها</option>
-                            {% comment %}                                 
-                            <option value="journals">نشریات</option>
-                             {% endcomment %}
+                            {% if option == "report"%}
+                                <option value="report">گزارش‌ها</option>
+                                <option value="article">مقالات</option>
+                            {% else %}
+                                <option value="article">مقالات</option>
+                                <option value="report">گزارش‌ها</option>
+                            {% endif %}        
                         </div>
                     </select>
                     
@@ -94,19 +97,21 @@
         </form>
     </div>
 
-    <main>
-        <p>
-        فیلتر نتایج بر اساس:
-        </p>
-        <div id="departments">
-            {% for department in departments %}
-            <div class="checkbox">
-                <input type="checkbox" id="{{ department.0 }}" name="department" value="{{ department.0 }}" class="department-checkbox" onclick="updateSearchResults()">
-                <label for="{{ department.0 }}"> {{ department.0 }} ({{department.1}}) </label>
+    {% if option == "report" %}
+        <main>
+            <p>
+            فیلتر نتایج بر اساس:
+            </p>
+            <div id="departments">
+                {% for department in departments %}
+                <div class="checkbox">
+                    <input type="checkbox" id="{{ department.0 }}" name="department" value="{{ department.0 }}" class="department-checkbox" onclick="updateSearchResults()">
+                    <label for="{{ department.0 }}"> {{ department.0 }} ({{department.1}}) </label>
+                </div>
+                {% endfor %} 
             </div>
-            {% endfor %} 
-        </div>
-    </main>
+        </main>
+    {% endif %}        
 
     <div id="loader-cotainer"></div>
     <span class="loader" id="loader"></span>
