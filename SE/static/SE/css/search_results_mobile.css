@@ -419,7 +419,7 @@ button img {
 .button-container {
   display: flex;
   flex-direction: column;
-  width: 10%;
+  width: 8rem !important;
 }
 
 .row {
@@ -428,14 +428,14 @@ button img {
 }
 
 .first-col {
-  width: 17%;
+  width: 10rem !important;
   color: #062aae;
   font-size: 1.35rem !important;
   font-family: titr;
 }
 
 .second-col {
-  width: 100%;
+  width: 52rem !important;
 }
 
 .second-col p {

@@ -123,7 +123,6 @@ def search_results(request):
 
     query = request.POST.get("query")
     option = request.POST.get("options")
-    print(f"option: {option}")
     set_option(option)
     search_method = request.POST.get("search-method")
     people_list = list()
@@ -234,7 +233,6 @@ def search_results(request):
     formatted_date = curr_date.strftime("%Y-%m-%d")
     formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
     curr_timestamp = f"{formatted_date} {formatted_time}"
-    print(curr_timestamp)
     unique_id = str(uuid.uuid4())
     id_without_dash = f"{unique_id[:8]}{unique_id[9:13]}{unique_id[14:18]}{unique_id[19:23]}{unique_id[24:]}"
     json_obj = {
@@ -466,7 +464,6 @@ def show_logs(request):
 def log_details(request, id):
     response = requests.get(f"{BASE_URL}logs/_doc/{id}")
     l = response.json()
-    print(f'time: {l["_source"]["timestamp"]}')
     return render(
         request,
         "SE/log_details.html",

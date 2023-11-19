@@ -349,8 +349,6 @@ def syntactic_search(
         timeout=30,
     )
 
-    print(response)
-
     return get_results(
         start_year,
         end_year,

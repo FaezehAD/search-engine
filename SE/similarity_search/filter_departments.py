@@ -1,10 +1,10 @@
 from SE.models import *
 
 departments = [
-    [
-        "مطالعات زیربنایی و امور تولیدی",
-        " معاونت پژوهش های زیربنایی و امور تولیدی",
-        "مطالعات زیربنایی",
+    [  # department_list
+        "مطالعات زیربنایی و امور تولیدی",  # d
+        " معاونت پژوهش های زیربنایی و امور تولیدی",  # d
+        "مطالعات زیربنایی",  # d
     ],
     ["مطالعات انرژی، صنعت و معدن", "صنعت و معدن", "مطالعات انرژی"],
     ["مطالعات آموزش و فرهنگ"],
@@ -20,9 +20,11 @@ departments = [
     ["افکارسنجی ملت"],
 ]
 
+
 def get_departments():
     global departments
     return departments
+
 
 def get_indices(selected_departments):
     global departments
@@ -49,11 +51,16 @@ def get_departments_with_number(results):
     departments_number = list()
     for department_list in departments:
         num = 0
+        result_ids_list = list()
         for d in department_list:
             for result in results:
+                result_id = result[0].id
+                if result_id in result_ids_list:
+                    continue
                 for department in result[0].departments.all():
                     department_name = department.name.strip()[0 : len(d)]
                     if department_name == d:
+                        result_ids_list.append(result_id)
                         num += 1
         departments_number.append((department_list[0], num))
     return departments_number
@@ -83,4 +90,3 @@ def filter_departments(results, selected_departments):
     if len(results) == 0:
         return (False, None)
     return (True, results)
-

@@ -22,16 +22,23 @@ const yearContainer = document.getElementById("year-error"),
   serialContainer = document.getElementById("serial-container"),
   selectElement = document.getElementById("options");
 
+
 function disableCheckboxes() {
   var selectedValue = selectElement.value;
-  if (selectedValue == 'article' && semanticRadio.checked) {
-    keywordsCheckbox.checked = false;
-    abstractCheckbox.checked = false;
-    bodiesCheckbox.checked = false;
-    keywordsCheckbox.disabled = true;
-    abstractCheckbox.disabled = true;
-    bodiesCheckbox.disabled = true;
-  } else {
+  if (selectedValue == 'article') {
+    if (semanticRadio.checked) {
+      keywordsCheckbox.checked = false;
+      abstractCheckbox.checked = false;
+      bodiesCheckbox.checked = false;
+      keywordsCheckbox.disabled = true;
+      abstractCheckbox.disabled = true;
+      bodiesCheckbox.disabled = true;
+    } else {
+      bodiesCheckbox.checked = false;
+      bodiesCheckbox.disabled = true;
+    }
+  }
+  else {
     keywordsCheckbox.disabled = false;
     abstractCheckbox.disabled = false;
     bodiesCheckbox.disabled = false;
