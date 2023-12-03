@@ -9,11 +9,7 @@ import json
 import requests
 from decouple import config
 from bs4 import BeautifulSoup
-from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from dotenv import *

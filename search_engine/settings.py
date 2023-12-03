@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # EMAIL_USE_TLS = config("EMAIL_USE_TLS")
 # EMAIL_HOST = config("EMAIL_HOST")
 # EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD") 
+# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 # EMAIL_PORT = config("EMAIL_PORT")
 
 # Application definition
@@ -61,9 +61,7 @@ ROOT_URLCONF = "search_engine.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            BASE_DIR / "templates"
-        ],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -92,7 +90,7 @@ DATABASES = {
         "PASSWORD": config("DB_PASSWORD"),
         "OPTIONS": {
             "charset": "utf8mb4",
-        }
+        },
     }
 }
 
@@ -133,9 +131,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATICFILES_DIRS=[
-    BASE_DIR / "static"
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -144,9 +140,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 ELASTICSEARCH_DSL = {
-    "default": {
-        "hosts": "elasticsearch:9200"
-    },
+    "default": {"hosts": "elasticsearch:9200"},
 }
 
 # LOGIN_REDIRECT_URL = "admin-page"
