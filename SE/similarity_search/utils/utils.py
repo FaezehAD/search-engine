@@ -2,6 +2,10 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 from .report_utils import *
 from .article_utils import *
+import datetime
+import pytz
+from persiantools.jdatetime import JalaliDateTime
+import uuid
 
 
 def print_fa(text):
@@ -97,7 +101,6 @@ def verify_people(results, people_list, option):
     return results
 
 
-
 def get_people(people_list, k, option):
     at_least_one = False
     if people_list is not None:
@@ -110,19 +113,21 @@ def get_people(people_list, k, option):
     results = list()
     for people in people_list:
         if people is not None and people != "":
-            if option == 'report':
+            if option == "report":
                 results.append(get_report_people_filter(people))
-            elif option == 'article':
+            elif option == "article":
                 results.append(get_article_people_filter(people))
     final_results = list()
     for r in results[0]:
-        for result in r: # result = Article
-            if option == 'report':
-                persian_keywords, english_keywords, departments = get_report_details(result)
+        for result in r:  # result = Article
+            if option == "report":
+                persian_keywords, english_keywords, departments = get_report_details(
+                    result
+                )
                 final_results.append(
                     (result, 200, persian_keywords, english_keywords, departments)
                 )
-            elif option == 'article':
+            elif option == "article":
                 persian_keywords, english_keywords = get_article_details(result)
                 final_results.append(
                     (result, 200, persian_keywords, english_keywords, list())
@@ -131,3 +136,20 @@ def get_people(people_list, k, option):
         return None
     return final_results[0:k]
 
+
+def get_timestamp():
+    curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
+    hour = curr_time.hour
+    minute = curr_time.minute
+    second = curr_time.second
+    curr_date = JalaliDateTime.now()
+    formatted_date = curr_date.strftime("%Y-%m-%d")
+    formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
+    curr_timestamp = f"{formatted_date} {formatted_time}"
+    return curr_timestamp
+
+
+def get_id_without_dash():
+    unique_id = str(uuid.uuid4())
+    id_without_dash = f"{unique_id[:8]}{unique_id[9:13]}{unique_id[14:18]}{unique_id[19:23]}{unique_id[24:]}"
+    return id_without_dash

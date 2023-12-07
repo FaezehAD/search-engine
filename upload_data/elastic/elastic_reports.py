@@ -23,9 +23,7 @@ def clean_string(input_str):
 
 
 doc_dict = dict()
-directory="./../../da"
-directory = "./../data_text/report/txt/"
-
+directory = "../../data_text/report/txt/"
 doc_list = list()
 for filename in os.listdir(directory):
     filename = filename[:-4]
@@ -34,12 +32,12 @@ for filename in os.listdir(directory):
         doc_dict[clean_filename] = filename
     doc_list.append(clean_filename)
 
-df = pd.read_json("./../data_text/report/info.json")
+df = pd.read_json("../../data_text/report/info.json")
 
 df2 = df.to_dict("records")
 
 ids = None
-with open("./upload_data/database/empty_abstract_and_body.txt", "r") as f:
+with open("../database/empty_abstract_and_body.txt", "r") as f:
     ids = f.readlines()
 
 
@@ -117,6 +115,9 @@ def generator(doc):
         for keyword in english_key_list:
             if keyword != "" and keyword != "/":
                 report_english_keywords.append(keyword)
+    report_required_matches = len(report_persian_keywords) + len(
+        report_english_keywords
+    )
     report_abstract = doc["Abstract"]
     if report_abstract == "":
         report_abstract = None
@@ -178,6 +179,7 @@ def generator(doc):
             "report_type": report_type,
             "english_keywords": report_english_keywords,
             "persian_keywords": report_persian_keywords,
+            "required_matches": report_required_matches,
             "abstract": report_abstract,
             "body": report_body,
         },
@@ -185,3 +187,6 @@ def generator(doc):
 
 
 res = helpers.bulk(es, (generator(doc) for doc in df2))
+
+
+

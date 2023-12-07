@@ -264,6 +264,7 @@ header {
   width: 10rem;
 }
 
+
 .header-button:hover,
 button[type="submit"]:hover,
 input[type="submit"]:hover {
@@ -274,7 +275,7 @@ input[type="submit"]:hover {
 header section {
   display: flex;
   justify-content: space-between;
-  width: 19rem;
+  width: 22rem;
   margin-right: 3rem;
 }
 

@@ -13,14 +13,13 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from dotenv import *
-import datetime
-import pytz
-from persiantools.jdatetime import JalaliDateTime
-import uuid
 from django.core.paginator import Paginator
+from django import forms
+# from django.conf import settings
+# import os
+# from django.core.files.storage import FileSystemStorage
+from django.core.exceptions import ValidationError
 
-
-# from django.contrib.auth.forms import UserCreationForm
 
 threshold = config("THRESHOLD")
 show_feedback = config("SHOW_FEEDBACK")
@@ -220,17 +219,7 @@ def search_results(request):
                     "feedback": "N",  # True, False, Neutral
                 }
             )
-
-    curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
-    hour = curr_time.hour
-    minute = curr_time.minute
-    second = curr_time.second
-    curr_date = JalaliDateTime.now()
-    formatted_date = curr_date.strftime("%Y-%m-%d")
-    formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
-    curr_timestamp = f"{formatted_date} {formatted_time}"
-    unique_id = str(uuid.uuid4())
-    id_without_dash = f"{unique_id[:8]}{unique_id[9:13]}{unique_id[14:18]}{unique_id[19:23]}{unique_id[24:]}"
+    id_without_dash = get_id_without_dash()
     json_obj = {
         "is_semantic": (search_method == "2"),
         "main_query": query,
@@ -245,10 +234,9 @@ def search_results(request):
         "report_people": report_people,
         "search_fields": search_fields,
         "results": results_list,
-        "timestamp": curr_timestamp,
+        "timestamp": get_timestamp(),
     }
     requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
-
     return render(
         request,
         "SE/search_results.html",
@@ -360,7 +348,7 @@ def admin_panel(request):
 
 
 @login_required
-def settings(request):
+def settings_page(request):
     global threshold
     global show_feedback
     if request.method == "POST":
@@ -482,4 +470,68 @@ def log_details(request, id):
                 "timestamp": l["_source"]["timestamp"],
             },
         },
+    )
+
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField(
+        label="متن ورودی را با فرمت txt. انتخاب کنید.",
+        help_text="file size limit: 2.5 MB",
+        allow_empty_file=False,
+        widget=forms.FileInput(
+            attrs={"accept": ".txt"},
+        ),
+        required=False,
+    )
+    input_text = forms.CharField(
+        label="متن ورودی",
+        widget=forms.Textarea(attrs={"placeholder": "متن خود را وارد کنید..."}),
+        required=False,
+    )
+
+
+def plagiarism_detection_input(request):
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if len(request.FILES) == 0:
+            print("there is no file")
+            input_text = request.POST.get("input_text", "")
+            if input_text != "":
+                # print(input_text)
+                # form = UploadFileForm()
+                return redirect('plagiarism-detection-page', input_text=input_text)
+            else:
+                print("also text is empty")
+                form.add_error(None, 'متن را وارد کنید!')
+        else:
+            if form.is_valid():
+                file = form.cleaned_data["file"]
+                content = file.read().decode("utf-8")
+                # print(content)
+                # form = UploadFileForm()
+                return redirect('plagiarism-detection-page', input_text=content)
+                # file_name = file.name[:-4] + "_" + get_timestamp() + ".txt"
+                # file_path = os.path.join(
+                #     settings.MEDIA_ROOT,
+                #     "uploads",
+                #     file_name,
+                # )
+                # with open(file_path, "wb+") as destination:
+                #     for chunk in file.chunks():
+                #         destination.write(chunk)
+                # with open(file_path, "r", encoding="utf_8") as file:
+                #     buffer = file.read()
+                #     print(buffer)
+            else:
+                errors = form.errors
+                print(errors)
+    else:  # GET
+        form = UploadFileForm()
+    return render(request, "SE/plagiarism_input.html", {"form": form})
+
+def plagiarism_detection(request, input_text):
+    print(input_text)
+    return render(
+        request,
+        "SE/plagiarism_detection.html",
     )

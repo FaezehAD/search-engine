@@ -13,7 +13,17 @@ urlpatterns = [
     path("signin", views.signin, name="signin-page"),
     path("signout", views.signout, name="signout-page"),
     path("admin", views.admin_panel, name="admin-page"),
-    path("admin/settings", views.settings, name="settings-page"),
+    path("admin/settings", views.settings_page, name="settings-page"),
     path("admin/logs", views.show_logs, name="logs-page"),
     path("admin/log/<str:id>", views.log_details, name="log-detail-page"),
+    path(
+        "plagiarism-detection-input",
+        views.plagiarism_detection_input,
+        name="plagiarism-detection-input-page",
+    ),
+    path(
+        "plagiarism-detection/<str:input_text>",
+        views.plagiarism_detection,
+        name="plagiarism-detection-page",
+    ),
 ]

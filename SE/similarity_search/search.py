@@ -1,10 +1,7 @@
-# import datetime
 import numpy as np
 from sentence_transformers import SentenceTransformer, util
 import requests
 import copy
-from transformers import XLMRobertaModel, XLMRobertaTokenizer
-import torch
 from decouple import config
 from SE.models import *
 from .load_indices import *
@@ -14,12 +11,6 @@ from .utils.report_utils import *
 from .filter_departments import *
 
 
-XLM_REBERTA_MODEL_NAME = "xlm-roberta-large"
-
-# model = XLMRobertaModel.from_pretrained(XLM_REBERTA_MODEL_NAME)
-# tokenizer = XLMRobertaTokenizer.from_pretrained(XLM_REBERTA_MODEL_NAME)
-
-# BASE_URL = f'http://{config("ELK_USER")}:{config("ELK_PASSWORD")}@localhost:9200/'
 BASE_URL = config("BASE_URL")
 
 model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
@@ -29,6 +20,7 @@ checkboxes = ["3", "", "", "", "1"]
 option = "report"
 
 raw_results = None
+
 search_method = "1"
 
 
