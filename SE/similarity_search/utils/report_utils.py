@@ -403,3 +403,10 @@ def verify_types(results, supervisory, legislative, strategic):
     if len(results) == 0:
         return None
     return results
+
+
+def get_report_by_id(id):
+    try:
+        return Report.objects.get(pk=id)
+    except Report.DoesNotExist:
+        return None

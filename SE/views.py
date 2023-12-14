@@ -3,6 +3,8 @@ from .models import *
 from .similarity_search.search import *
 from .similarity_search.utils.report_utils import *
 from .similarity_search.utils.utils import *
+from .similarity_search.utils.plagiarism import *
+from .similarity_search.utils.compare_texts import *
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import json
@@ -14,19 +16,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from dotenv import *
 from django.core.paginator import Paginator
-from django import forms
-# from django.conf import settings
-# import os
-# from django.core.files.storage import FileSystemStorage
-from django.core.exceptions import ValidationError
 
 
 threshold = config("THRESHOLD")
 show_feedback = config("SHOW_FEEDBACK")
 BASE_URL = config("BASE_URL")
+normalizer = Normalizer()
 
 
 def index(request):
+    logout(request)
     return render(
         request,
         "SE/index.html",
@@ -100,9 +99,10 @@ def search_results(request):
         return HttpResponse()
 
     elif req_type == 3:  # click
-        result_id = data["result_id"]
         query_id = data["query_id"]
-
+        print(f"q: {query_id}")
+        print("==========================")
+        result_id = data["result_id"]
         json_obj = {
             "script": {
                 "source": "for (r in ctx._source.results) { if(r.result_id == params.result_id){r.click = params.click} }",
@@ -237,6 +237,7 @@ def search_results(request):
         "timestamp": get_timestamp(),
     }
     requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
+    print(results)
     return render(
         request,
         "SE/search_results.html",
@@ -473,65 +474,101 @@ def log_details(request, id):
     )
 
 
-class UploadFileForm(forms.Form):
-    file = forms.FileField(
-        label="متن ورودی را با فرمت txt. انتخاب کنید.",
-        help_text="file size limit: 2.5 MB",
-        allow_empty_file=False,
-        widget=forms.FileInput(
-            attrs={"accept": ".txt"},
-        ),
-        required=False,
-    )
-    input_text = forms.CharField(
-        label="متن ورودی",
-        widget=forms.Textarea(attrs={"placeholder": "متن خود را وارد کنید..."}),
-        required=False,
-    )
-
-
 def plagiarism_detection_input(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
-        if len(request.FILES) == 0:
-            print("there is no file")
-            input_text = request.POST.get("input_text", "")
-            if input_text != "":
-                # print(input_text)
-                # form = UploadFileForm()
-                return redirect('plagiarism-detection-page', input_text=input_text)
-            else:
-                print("also text is empty")
-                form.add_error(None, 'متن را وارد کنید!')
+        input_keywords = request.POST.get("input_keywords", "")
+        is_valid = False
+        input_title = ""
+        if input_keywords == "":
+            form.add_error(None, "لطفا کلمات کلیدی را وارد کنید!")
         else:
-            if form.is_valid():
-                file = form.cleaned_data["file"]
-                content = file.read().decode("utf-8")
-                # print(content)
-                # form = UploadFileForm()
-                return redirect('plagiarism-detection-page', input_text=content)
-                # file_name = file.name[:-4] + "_" + get_timestamp() + ".txt"
-                # file_path = os.path.join(
-                #     settings.MEDIA_ROOT,
-                #     "uploads",
-                #     file_name,
-                # )
-                # with open(file_path, "wb+") as destination:
-                #     for chunk in file.chunks():
-                #         destination.write(chunk)
-                # with open(file_path, "r", encoding="utf_8") as file:
-                #     buffer = file.read()
-                #     print(buffer)
+            if len(request.FILES) == 0:
+                input_text = request.POST.get("input_text", "")
+                if input_text != "" and input_keywords != "":
+                    input_title = get_id_without_dash() + "_" + get_timestamp()
+                    save_file(input_title, input_text, input_keywords)
+                    is_valid = True
+                else:
+                    form.add_error(None, "لطفا متن را وارد کنید!")
             else:
-                errors = form.errors
-                print(errors)
+                if form.is_valid():
+                    file = form.cleaned_data["file"]
+                    print(file.name[-4:])
+                    if file.name[-4:] != ".txt":
+                        form.add_error(None, "لطفا فایل با فرمت txt. را وارد کنید!")
+                    else:
+                        content = file.read().decode("utf-8")
+                        if content == "":
+                            form.add_error(None, "لطفا فایل حاوی متن را وارد کنید!")
+                        else:
+                            input_title = file.name[:-4] + "_" + get_timestamp()
+                            save_file(input_title, content, input_keywords)
+                            is_valid = True
+                else:
+                    errors = form.errors
+                    print(errors)
+        if is_valid:
+            return redirect("plagiarism-detection-page", input_title=input_title)
     else:  # GET
         form = UploadFileForm()
     return render(request, "SE/plagiarism_input.html", {"form": form})
 
-def plagiarism_detection(request, input_text):
-    print(input_text)
+
+def get_input_text(input_title):
+    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
+    try:
+        with open(f"{file_path}/input_text.txt", "r", encoding="utf_8") as file:
+            input_text = file.read()
+    except:
+        input_text = ""
+    return input_text
+
+
+def get_input_keywords(input_title):
+    input_keywords_list = list()
+    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
+    try:
+        with open(f"{file_path}/input_keywords.txt", "r", encoding="utf_8") as file:
+            input_keywords_list = split_string_by_newline(file.read())
+    except:
+        input_keywords_list = list()
+    return input_keywords_list
+
+
+def plagiarism_detection(request, input_title):
+    input_text = get_input_text(input_title)
+    input_keywords_list = get_input_keywords(input_title)
+    results = check_plagiarism(input_text, input_keywords_list)
+    is_available = len(results) != 0
     return render(
         request,
         "SE/plagiarism_detection.html",
+        context={
+            "input_title": input_title,
+            "input_text": input_text,
+            "input_keywords": input_keywords_list,
+            "results": results,
+            "is_available": is_available,
+            "option": "report",
+        },
+    )
+
+
+def compare_texts(request, input_title, id):
+    global normalizer
+    report = get_report_by_id(id)
+    report_text = ""
+    if report is not None:
+        report_text = word_tokenize(report.body_preprocessed)
+    input_text = word_tokenize(normalizer.normalize(get_input_text(input_title)))
+    input_text_highlighted = compare_strings(input_text, report_text)
+    report_text_highlighted = compare_strings(report_text, input_text)
+    return render(
+        request,
+        "SE/compare_texts.html",
+        context={
+            "input_text": input_text_highlighted,
+            "report_text": report_text_highlighted,
+        },
     )

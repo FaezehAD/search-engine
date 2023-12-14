@@ -1,0 +1,23 @@
+main {
+    margin: 10rem auto;
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.highlight {
+    background-color: rgb(203, 2, 2);
+    color: white;
+}
+
+article {
+    margin-bottom: 5rem;
+    width:49%;
+    background: rgb(248, 248, 248);
+    height: fit-content;
+    padding: 1rem;
+}
+
+article div {
+    margin-bottom: 2rem;
+}

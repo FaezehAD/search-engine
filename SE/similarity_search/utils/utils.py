@@ -6,6 +6,9 @@ import datetime
 import pytz
 from persiantools.jdatetime import JalaliDateTime
 import uuid
+from django.conf import settings
+import os
+from django import forms
 
 
 def print_fa(text):
@@ -153,3 +156,42 @@ def get_id_without_dash():
     unique_id = str(uuid.uuid4())
     id_without_dash = f"{unique_id[:8]}{unique_id[9:13]}{unique_id[14:18]}{unique_id[19:23]}{unique_id[24:]}"
     return id_without_dash
+
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField(
+        label="متن ورودی را با فرمت txt. انتخاب کنید.",
+        help_text="file size limit: 2.5 MB",
+        allow_empty_file=True,
+        widget=forms.FileInput(
+            attrs={"accept": ".txt"},
+        ),
+        required=False,
+    )
+    input_text = forms.CharField(
+        label="متن ورودی",
+        widget=forms.Textarea(
+            attrs={"placeholder": "متن خود را وارد کنید...", "cols": 40, "rows": 10}
+        ),
+        required=False,
+    )
+    input_keywords = forms.CharField(
+        label="کلمات کلیدی ورودی (در هر خط یک کلمه کلیدی وارد کنید.)",
+        widget=forms.Textarea(
+            attrs={"placeholder": "کلمات کلیدی را وارد کنید...", "cols": 40, "rows": 6}
+        ),
+        required=False,
+    )
+
+
+def save_file(input_title, input_text, input_keywords):
+    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
+    os.makedirs(file_path)
+    with open(f"{file_path}/input_keywords.txt", "w") as f:
+        f.write(str(input_keywords))
+    with open(f"{file_path}/input_text.txt", "w") as f:
+        f.write(str(input_text))
+
+
+def split_string_by_newline(input_str):
+    return input_str.splitlines()

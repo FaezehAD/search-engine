@@ -1,109 +1,152 @@
 {% load static %}
 {% if is_available %}
 
-<ul id="content">
-    {% for result in results %}
-    <li class="single_content">
-        <div id="with-feedback">
-            {% if show_feedback == "T" %}
-                <div class="svg-container" id="{{result.0.id}}">
-                    <img class="correct_normal" src="{% static 'SE/images/correct_normal.svg' %}" alt="">            
-                    <img class="correct_filled not-visible" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
+    <ul id="content">
+        {% for result in results %}
+        <li class="single_content">
+            <div id="with-feedback">
+                {% if show_feedback == "T" %}
+                    <div class="svg-container" id="{{result.0.id}}">
+                        <img class="correct_normal" src="{% static 'SE/images/correct_normal.svg' %}" alt="">            
+                        <img class="correct_filled not-visible" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
 
-                    <img class="incorrect_normal" src="{% static 'SE/images/incorrect_normal.svg' %}" alt="">
-                    <img class="incorrect_filled not-visible" src="{% static 'SE/images/incorrect_filled.svg' %}" alt="">
-                </div>
-            {% endif %}
-            <div class="main-container">
-                <div class="button-container">
-                    
-                    {% if option == "report" %}
-                        <button style="background: rgb(245, 78, 44) !important;">
-                            <img src="{% static 'SE/images/report.svg' %}" alt="">
-                            گزارش
+                        <img class="incorrect_normal" src="{% static 'SE/images/incorrect_normal.svg' %}" alt="">
+                        <img class="incorrect_filled not-visible" src="{% static 'SE/images/incorrect_filled.svg' %}" alt="">
+                    </div>
+                {% endif %}
+                <div class="main-container">
+                    <div class="button-container">
                         
-                        {% elif option == "article" %}
-                    
-                        <button style="background: rgb(144, 196, 0) !important;">
-                            <img src="{% static 'SE/images/article.svg' %}" alt="">
-                            مقاله همایش
-                        {% endif %}
-                    </button>
+                        {% if option == "report" %}
+                            <button style="background: rgb(245, 78, 44) !important;">
+                                <img src="{% static 'SE/images/report.svg' %}" alt="">
+                                گزارش
+                            
+                            {% elif option == "article" %}
+                        
+                            <button style="background: rgb(144, 196, 0) !important;">
+                                <img src="{% static 'SE/images/article.svg' %}" alt="">
+                                مقاله همایش
+                            {% endif %}
+                        </button>
 
-                    
-                    <button>    
-                        {% if option == "report" and result.0.dl_path %}
-                            <a href="{{result.0.dl_path}}" target="_blank">
-                                <img src="{% static 'SE/images/pdf.svg' %}" alt="">
-                                دانلود
-                            </a>
-                        {% else %}
-                            <p>
-                                امکان دانلود وجود ندارد.
-                            </p>
-                        {% endif %}        
-                    </button>
-                </div>
-                {% if option == "report"%}
-                    <a href="{% url 'report-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
-                {% elif option == "article" %}
-                    <a href="{% url 'article-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
-                {% endif %}        
-                    <div class="table-container">
-                        <div class="row">
-                            <div class="first-col">
-                                عنوان:
-                            </div>
-                            <div class="second-col">
-                                {{result.0.title}}
-                            </div>
-                        </div>
-                        {% if option == 'report'%}
+                        
+                        <button>    
+                            {% if option == "report" and result.0.dl_path %}
+                                <a href="{{result.0.dl_path}}" target="_blank">
+                                    <img src="{% static 'SE/images/pdf.svg' %}" alt="">
+                                    دانلود
+                                </a>
+                            {% else %}
+                                <p>
+                                    امکان دانلود وجود ندارد.
+                                </p>
+                            {% endif %}        
+                        </button>
+                    </div>
+                    {% if option == "report"%}
+                        <a href="{% url 'report-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
+                    {% elif option == "article" %}
+                        <a href="{% url 'article-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
+                    {% endif %}        
+                        <div class="table-container">
                             <div class="row">
                                 <div class="first-col">
-                                    تاریخ انتشار:
+                                    عنوان:
                                 </div>
                                 <div class="second-col">
-                                    {% if result.0.publication_date %}
-                                        {{result.0.publication_date}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
+                                    {{result.0.title}}
                                 </div>
                             </div>
+                            {% if option == 'report'%}
+                                <div class="row">
+                                    <div class="first-col">
+                                        تاریخ انتشار:
+                                    </div>
+                                    <div class="second-col">
+                                        {% if result.0.publication_date %}
+                                            {{result.0.publication_date}}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="first-col">
+                                        شماره مسلسل:
+                                    </div>
+                                    <div class="second-col">
+                                        {% if result.0.serial %}
+                                            {{result.0.serial}}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="first-col">
+                                        نوع:
+                                    </div>
+                                    <div class="second-col">
+                                        {% if result.0.report_type %}
+                                            {{result.0.report_type}}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="first-col">
+                                        دفاتر:
+                                    </div>
+                                    <div class="second-col">
+                                        {% if result.4 %}
+                                            {% for department in result.4 %}
+                                                <p>
+                                                    {{department.name}}
+                                                    {% if not forloop.last %}
+                                                        /
+                                                    {% endif %}
+                                                </p>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div>
+                                                -
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% elif option == 'article'%}
+                                <div class="row">
+                                    <div class="first-col">
+                                        سال نشر:
+                                    </div>
+                                    <div class="second-col">
+                                        {% if result.0.year %}
+                                            {{result.0.year}}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="first-col">
-                                    شماره مسلسل:
+                                    کلیدواژه:
                                 </div>
                                 <div class="second-col">
-                                    {% if result.0.serial %}
-                                        {{result.0.serial}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="first-col">
-                                    نوع:
-                                </div>
-                                <div class="second-col">
-                                    {% if result.0.report_type %}
-                                        {{result.0.report_type}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="first-col">
-                                    دفاتر:
-                                </div>
-                                <div class="second-col">
-                                    {% if result.4 %}
-                                        {% for department in result.4 %}
+                                    {% if result.2 or result.3 %}
+                                        {% for keyword in result.2 %}
                                             <p>
-                                                {{department.name}}
+                                                {{keyword.value}}
+                                                {% if not forloop.last %}
+                                                    /
+                                                {% endif %}
+                                            </p>
+                                        {% endfor %}
+                                        {% for keyword in result.3 %}
+                                            <p>
+                                                {{keyword.value}}
                                                 {% if not forloop.last %}
                                                     /
                                                 {% endif %}
@@ -116,82 +159,40 @@
                                     {% endif %}
                                 </div>
                             </div>
-                        {% elif option == 'article'%}
                             <div class="row">
                                 <div class="first-col">
-                                    سال نشر:
+                                    چکیده:
                                 </div>
                                 <div class="second-col">
-                                    {% if result.0.year %}
-                                        {{result.0.year}}
+                                    {% if result.0.abstract %}
+                                        <div class="truncate-to-2-lines justify">{{result.0.abstract}}</div>
                                     {% else %}
-                                        -
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="row">
-                            <div class="first-col">
-                                کلیدواژه:
-                            </div>
-                            <div class="second-col">
-                                {% if result.2 or result.3 %}
-                                    {% for keyword in result.2 %}
-                                        <p>
-                                            {{keyword.value}}
-                                            {% if not forloop.last %}
-                                                /
-                                            {% endif %}
-                                        </p>
-                                    {% endfor %}
-                                    {% for keyword in result.3 %}
-                                        <p>
-                                            {{keyword.value}}
-                                            {% if not forloop.last %}
-                                                /
-                                            {% endif %}
-                                        </p>
-                                    {% endfor %}
-                                {% else %}
                                     <div>
                                         -
                                     </div>
-                                {% endif %}
+                                    {% endif %} 
+                                </div>
                             </div>
+                            {% if result.1 != 200 %}
+                                <div class="row">
+                                    <div class="first-col">
+                                        درجه شباهت:
+                                    </div>
+                                    <div class="second-col">
+                                        {{result.1}}%
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="row">
-                            <div class="first-col">
-                                چکیده:
-                            </div>
-                            <div class="second-col">
-                                {% if result.0.abstract %}
-                                    <div class="truncate-to-2-lines justify">{{result.0.abstract}}</div>
-                                {% else %}
-                                <div>
-                                    -
-                                </div>
-                                {% endif %} 
-                            </div>
-                        </div>
-                        {% if result.1 != 200 %}
-                            <div class="row">
-                                <div class="first-col">
-                                    درجه شباهت:
-                                </div>
-                                <div class="second-col">
-                                    {{result.1}}%
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </a>
+                    </a>
+                    <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
+                </div>
             </div>
-        </div>
-    </li>
-    {% endfor %}
-</ul>
+        </li>
+        {% endfor %}
+    </ul>
 {% else %}
-<p id="not-found">
-    نتیجه‌ای یافت نشد! با کلیدواژه‌های دیگر و سال نشر متفاوت مجدداً جست‌وجو نمایید.
-</p>
+    <p id="not-found">
+        نتیجه‌ای یافت نشد!
+    </p>
 {% endif %}

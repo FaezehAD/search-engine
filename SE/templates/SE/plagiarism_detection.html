@@ -8,18 +8,39 @@
 
 
 {% block css_files %}
-<link href="{% static 'SE/css/plagiarism_detection_mobile.css' %}" rel="stylesheet">
-<link href="{% static 'SE/css/plagiarism_detection_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
-<link href="{% static 'SE/css/plagiarism_detection_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
+<link href="{% static 'SE/css/search_results_mobile.css' %}" rel="stylesheet">
+<link href="{% static 'SE/css/search_results_tablet.css' %}" rel="stylesheet" media="screen and (min-width : 768px)">
+<link href="{% static 'SE/css/search_results_desktop.css' %}" rel="stylesheet" media="screen and (min-width : 992px)">
 {% endblock css_files %}
 
 
 {% block content %}
 
-<main>
+<div id="main">
+    <div class="top-row">
+        <div class="right-col">
+            متن ورودی:
+        </div>
 
+        <div class="left-col">
+            {{input_text}}                
+        </div>
+    </div>
 
-</main>
+    <div class="top-row">
+        <div class="right-col">
+            کلمات کلیدی ورودی:
+        </div>
+
+        <div class="left-col">
+            {% for keyword in input_keywords %}
+                    {{keyword}}
+            {% endfor %}
+        </div>
+    </div>
+    {% include "SE/includes/results.html" %}
+
+</div>
 
 
 {% endblock content %}

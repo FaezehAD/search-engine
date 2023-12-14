@@ -17,12 +17,17 @@ urlpatterns = [
     path("admin/logs", views.show_logs, name="logs-page"),
     path("admin/log/<str:id>", views.log_details, name="log-detail-page"),
     path(
-        "plagiarism-detection-input",
+        "plagiarism-detection/input",
         views.plagiarism_detection_input,
         name="plagiarism-detection-input-page",
     ),
     path(
-        "plagiarism-detection/<str:input_text>",
+        "plagiarism-detection/compare-texts/<str:input_title>/<str:id>",
+        views.compare_texts,
+        name="compare-texts-page",
+    ),
+    path(
+        "plagiarism-detection/<str:input_title>",
         views.plagiarism_detection,
         name="plagiarism-detection-page",
     ),

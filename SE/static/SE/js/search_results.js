@@ -164,8 +164,6 @@ function resultClicked(element) {
     query_id: query_id,
   };
 
-  console.log(query_id)
-
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
   let xhr = new XMLHttpRequest();
   xhr.open("POST", "/search-engine/search", true);

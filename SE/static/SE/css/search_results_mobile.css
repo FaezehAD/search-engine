@@ -42,8 +42,12 @@ li article {
   line-height: 2.2rem;
 }
 
-ul {
+#results-filtered {
   padding-top: 18rem;
+}
+
+ul {
+  padding-top: 2rem;
   margin-right: 3rem;
   padding-right: 5rem;
   width: 96vw;
@@ -458,7 +462,23 @@ button img {
 .main-container a {
   text-decoration: none;
   color: black;
-  width: 100%;
+  width: 80%;
+}
+
+.main-container #compare {
+  width: 20% !important;
+  height: 5rem;
+  color: white;
+  background:#062aae;
+  border-bottom-right-radius: 0.6rem;
+  border-top-left-radius: 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container #compare:hover {
+  background: #2f8ff9 !important;
 }
 
 .not-visible {
@@ -530,19 +550,33 @@ article div:nth-of-type(2) {
   cursor: pointer;
 }
 
-#with-feedback{
+#with-feedback {
   display: flex;
   justify-content: space-between;
   width: 70%;
 }
 
-.svg-container{
+.svg-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 6rem;
 }
 
-.svg-container img:hover{
+.svg-container img:hover {
   cursor: pointer;
+}
+
+.top-row {
+  display: flex;
+  width: 80%;
+  margin: 2rem auto;
+}
+
+.top-row .right-col {
+  width: 20rem;
+}
+
+#main {
+  margin: 10rem auto;
 }
