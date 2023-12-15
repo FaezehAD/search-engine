@@ -5,7 +5,33 @@ import sys
 
 
 from django.core.management.commands.runserver import Command as runserver
+
+# from django.db import reset_cache
+# from django.db.models import Q
+# from django.utils import timezone
+# from django.contrib.sessions.models import Session
+
 runserver.default_port = "8000"
+
+
+# def delete_old_sessions(apps=None):
+
+#     Session = apps.get_model("sessions")
+#     now = timezone.now()
+
+#     threshold_date = now - timezone.timedelta(
+#         days=1
+#     )  
+
+#     Session.objects.filter(last_activity_date__lt=threshold_date).delete()
+
+#     reset_cache(cache_type="session")
+
+
+# if __name__ == "__main__":
+#     from django.core.management import call
+
+    # call(delete_old_sessions)
 
 
 def main():

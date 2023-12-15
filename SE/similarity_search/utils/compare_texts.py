@@ -1,6 +1,6 @@
 from hazm import Normalizer, word_tokenize, sent_tokenize
 from nltk.util import ngrams
-from decouple import config
+import pickle
 import collections
 import numpy as np
 import difflib

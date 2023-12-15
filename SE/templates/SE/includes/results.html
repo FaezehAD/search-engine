@@ -5,7 +5,7 @@
         {% for result in results %}
         <li class="single_content">
             <div id="with-feedback">
-                {% if show_feedback == "T" %}
+                {% if show_feedback %}
                     <div class="svg-container" id="{{result.0.id}}">
                         <img class="correct_normal" src="{% static 'SE/images/correct_normal.svg' %}" alt="">            
                         <img class="correct_filled not-visible" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
@@ -33,7 +33,7 @@
                         
                         <button>    
                             {% if option == "report" and result.0.dl_path %}
-                                <a href="{{result.0.dl_path}}" target="_blank">
+                                <a href="{{result.0.dl_path}}">
                                     <img src="{% static 'SE/images/pdf.svg' %}" alt="">
                                     دانلود
                                 </a>
@@ -185,7 +185,9 @@
                             {% endif %}
                         </div>
                     </a>
-                    <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
+                    {% if not show_feedback %}
+                        <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
+                    {% endif %}
                 </div>
             </div>
         </li>

@@ -2,90 +2,62 @@ import numpy as np
 from sentence_transformers import SentenceTransformer, util
 import requests
 import copy
-from decouple import config
 from SE.models import *
 from .load_indices import *
 from .sort_results import *
 from .utils.utils import *
 from .utils.report_utils import *
 from .filter_departments import *
+import pickle
 
 
-BASE_URL = config("BASE_URL")
+with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
+    BASE_URL = pickle.load(f)
 
 model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
 
-checkboxes = ["3", "", "", "", "1"]
-
-option = "report"
-
-raw_results = None
-
-search_method = "1"
+with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
+    DEFAULT_OPTION = pickle.load(f)
 
 
-def get_search_method():
-    global search_method
-    return search_method
-
-
-def set_search_method(input_method):
-    global search_method
-    search_method = input_method
-
-
-def get_option():
-    global option
-    return option
-
-
-def set_option(input_option):
-    global option
-    option = input_option
-
-
-def get_raw_results():
-    global raw_results
-    if raw_results is None:
-        return None
+def get_raw_results(request_session):
+    with open("./data/config_variables/DEFAULT_RAW_RESULTS_TITLE.pkl", "rb") as f:
+        DEFAULT_RAW_RESULTS_TITLE = pickle.load(f)
+    RAW_RESULTS_TITLE = request_session.get("raw_results_title", DEFAULT_RAW_RESULTS_TITLE)
+    with open(f"./data/raw_results/{RAW_RESULTS_TITLE}.pkl", "rb") as f:
+        raw_results= pickle.load(f)
     new_raw = list()
     for r in raw_results:
         new_raw.append(r)
     return new_raw
 
 
-def set_checkboxes(input_checkboxes):
-    global checkboxes
-    checkboxes = input_checkboxes
+def get_min_score(request_session):
+    option = request_session.get("option", DEFAULT_OPTION)
+    return sort_results_cos_sim(
+        get_raw_results(request_session), asc=False, option=option
+    )
 
 
-def get_checkboxes():
-    global checkboxes
-    return checkboxes
+def get_max_score(request_session):
+    option = request_session.get("option", DEFAULT_OPTION)
+    return sort_results_cos_sim(
+        get_raw_results(request_session), asc=True, option=option
+    )
 
 
-def get_min_score():
-    global option
-    return sort_results_cos_sim(get_raw_results(), asc=False, option=option)
-
-
-def get_max_score():
-    global option
-    return sort_results_cos_sim(get_raw_results(), asc=True, option=option)
-
-
-def get_date_ascending():
-    global option
-    raw_results = get_raw_results()
+def get_date_ascending(request_session):
+    option = request_session.get("option", DEFAULT_OPTION)
+    raw_results = get_raw_results(request_session)
     if raw_results is None:
         return (False, None)
     is_available, results = sort_results_date(raw_results, asc=True, option=option)
     return (is_available, results)
 
 
-def get_date_descending():
-    global option
-    raw_results = get_raw_results()
+def get_date_descending(request_session):
+    option = request_session.get("option", DEFAULT_OPTION)
+    raw_results = get_raw_results(request_session)
     if raw_results is None:
         return (False, None)
     is_available, results = sort_results_date(raw_results, asc=False, option=option)
@@ -119,15 +91,15 @@ def replace_dash_with_alphabet(string):
     return string.replace("-", "a")
 
 
-def get_embeddings(embedding_type):
-    global option
+def get_embeddings(embedding_type, request_session):
+    option = request_session.get("option", DEFAULT_OPTION)
     sentence_embeddings = np.loadtxt(
-        f"./SE/embeddings/report_{embedding_type}_embeddings.txt", dtype=np.float32
+        f"./SE/embeddings/{option}_{embedding_type}_embeddings.txt", dtype=np.float32
     )
     return sentence_embeddings
 
 
-def get_semantic_results(indices, ids, xq, embeddings):
+def get_semantic_results(indices, ids, xq, embeddings, option):
     results = list()
     ids_to_return = list()
     for item in indices:
@@ -180,9 +152,10 @@ def get_results(
     supervisory,
     legislative,
     strategic,
-    option,
+    request_session,
+    query_id,
 ):
-    global raw_results
+    option = request_session.get("option", DEFAULT_OPTION)
     if people_list is not None and len(people_list) != 0:
         results = verify_people(results, people_list, option)
     if option == "report":
@@ -197,13 +170,15 @@ def get_results(
         )
     raw_results = copy.copy(
         delete_outdated_results(delete_min_rate(results), start_year, end_year)
-    )
-    return get_min_score()
+    )    
+    with open(f"./data/raw_results/{query_id}.pkl", "wb") as f:
+        pickle.dump(raw_results, f)
+    request_session["raw_results_title"] = query_id
+    return get_min_score(request_session)
 
 
 def semantic_search(
     query,
-    option,
     start_year,
     end_year,
     input_serial,
@@ -211,8 +186,13 @@ def semantic_search(
     supervisory,
     legislative,
     strategic,
+    request_session,
+    query_id,
 ):
-    global checkboxes
+    option = request_session.get("option", DEFAULT_OPTION)
+    with open("./data/config_variables/CHECKBOXES.pkl", "rb") as f:
+        DEFAULT_CHECKBOXES = pickle.load(f)
+    checkboxes = request_session.get("checkboxes", DEFAULT_CHECKBOXES)
     results = None
     # input_ids = tokenizer.encode(query, add_special_tokens=True, return_tensors="pt")
     # with torch.no_grad():
@@ -221,28 +201,34 @@ def semantic_search(
     xq = model.encode([query]).astype(np.float32)
     if option == "report":
         if checkboxes[0] == "3":
-            sentence_embeddings = get_embeddings("title")
+            sentence_embeddings = get_embeddings("title", request_session)
             _, I = report_title_index.search(xq, k)
             results = get_semantic_results(
-                I[0], report_title_ids, xq, sentence_embeddings
+                I[0], report_title_ids, xq, sentence_embeddings, option
             )
         elif checkboxes[1] == "4":
-            sentence_embeddings = get_embeddings("keywords")
+            sentence_embeddings = get_embeddings("keywords", request_session)
             _, I = report_keywords_index.search(xq, k)
-            results = get_semantic_results(I[0], keywords_ids, xq, sentence_embeddings)
+            results = get_semantic_results(
+                I[0], keywords_ids, xq, sentence_embeddings, option
+            )
         elif checkboxes[2] == "5":
-            sentence_embeddings = get_embeddings("abstract")
+            sentence_embeddings = get_embeddings("abstract", request_session)
             _, I = report_abstract_index.search(xq, k)
-            results = get_semantic_results(I[0], abstract_ids, xq, sentence_embeddings)
+            results = get_semantic_results(
+                I[0], abstract_ids, xq, sentence_embeddings, option
+            )
         elif checkboxes[3] == "6":
-            sentence_embeddings = get_embeddings("body")
+            sentence_embeddings = get_embeddings("body", request_session)
             _, I = report_body_index.search(xq, k)
-            results = get_semantic_results(I[0], body_ids, xq, sentence_embeddings)
+            results = get_semantic_results(
+                I[0], body_ids, xq, sentence_embeddings, option
+            )
         else:
-            sentence_embeddings = get_embeddings("title")
+            sentence_embeddings = get_embeddings("title", request_session)
             _, I = report_title_index.search(xq, k)
             results = get_semantic_results(
-                I[0], report_title_ids, xq, sentence_embeddings
+                I[0], report_title_ids, xq, sentence_embeddings, option
             )
     elif option == "article":
         with open("./SE/embeddings/article_title_indices.txt", "r") as f:
@@ -252,7 +238,7 @@ def semantic_search(
         )
         _, I = article_title_index.search(xq, k)
         results = get_semantic_results(
-            I[0], article_title_ids, xq, article_sentence_embeddings
+            I[0], article_title_ids, xq, article_sentence_embeddings, option
         )
     # et = datetime.datetime.now()
     # elapsed_time = et - st  # cpu + io = full time
@@ -268,13 +254,12 @@ def semantic_search(
         supervisory,
         legislative,
         strategic,
-        option,
+        query_id,
     )
 
 
 def syntactic_search(
     query,
-    option,
     start_year,
     end_year,
     input_serial,
@@ -286,8 +271,13 @@ def syntactic_search(
     or_param,
     not_param,
     exact_param,
+    request_session,
+    query_id,
 ):
-    global checkboxes
+    option = request_session.get("option", DEFAULT_OPTION)
+    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
+        DEFAULT_CHECKBOXES = pickle.load(f)
+    checkboxes = request_session.get("checkboxes", DEFAULT_CHECKBOXES)
     fields = list()
     if checkboxes[0] == "3":
         fields.append("title^6")
@@ -322,7 +312,7 @@ def syntactic_search(
                     supervisory,
                     legislative,
                     strategic,
-                    option,
+                    query_id,
                 )
         else:
             search_obj = {
@@ -350,5 +340,6 @@ def syntactic_search(
         supervisory,
         legislative,
         strategic,
-        option,
+        request_session,
+        query_id,
     )

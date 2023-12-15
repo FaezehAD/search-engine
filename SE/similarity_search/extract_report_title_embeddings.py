@@ -8,7 +8,7 @@ model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
 
 print("-"*100)
 
-# df = pd.read_json("../../data_text/report/info.json")
+# df = pd.read_json("../../data/data_text/report/info.json")
 # df2 = df.to_dict("records")
 
 

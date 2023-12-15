@@ -1,16 +1,23 @@
 from hazm import Normalizer, word_tokenize, sent_tokenize
 from nltk.util import ngrams
 from elasticsearch import Elasticsearch
-from decouple import config
+import pickle
 import collections
 import numpy as np
 from .report_utils import *
 
 
 def check_plagiarism(input_text, input_keywords_list):
+    
+    with open("./../data/config_variables/ELK_USER.pkl", "rb") as f:
+        ELK_USER = pickle.load(f)
+
+    with open("./../data/config_variables/ELK_PASSWORD.pkl", "rb") as f:
+        ELK_PASSWORD = pickle.load(f)
+
     es = Elasticsearch(
         hosts=["http://localhost:9200"],
-        basic_auth=(config("ELK_USER"), config("ELK_PASSWORD")),
+        basic_auth=(ELK_USER, ELK_PASSWORD),
         timeout=30,
     )
     all_ngram = []

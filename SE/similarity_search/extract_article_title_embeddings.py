@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
 
-df = pd.read_json("../../data_text/article/new_set.json")
+df = pd.read_json("../../data/data_text/article/new_set.json")
 df2 = df.to_dict("records")
 
 

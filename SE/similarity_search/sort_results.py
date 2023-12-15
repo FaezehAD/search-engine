@@ -1,4 +1,4 @@
-from decouple import config
+import pickle
 
 
 def compare_years(first_year, second_year):
@@ -105,11 +105,12 @@ def sort_results_date(results, asc, option):
 def delete_min_rate(results):
     if results is None:
         return None
-    threshold = int(config("THRESHOLD"))
+    with open("./data/config_variables/THRESHOLD.pkl", "rb") as f:
+        THRESHOLD = pickle.load(f)
     length = len(results)
     i = 0
     while i < length:
-        if results[i][1] < threshold:
+        if results[i][1] < THRESHOLD:
             results.pop(i)
             i = i - 1
             length = length - 1

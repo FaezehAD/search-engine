@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index-page"),
-    path("search", views.search_results, name="search-results-page"),
-    path("advanced-search", views.advanced_search, name="advanced-search-page"),
+    path("search/", views.search_results, name="search-results-page"),
+    path("advanced-search/", views.advanced_search, name="advanced-search-page"),
     path("articles/<int:id>", views.article_details, name="article-detail-page"),
     path("reports/<int:id>", views.report_details, name="report-detail-page"),
     path("search-guide/", views.guide, name="guide-page"),

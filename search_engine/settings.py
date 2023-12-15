@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
-import os
+
+# import pickle
+import pickle
+
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,18 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY")
+with open("./data/config_variables/SECRET_KEY.pkl", "rb") as f:
+    SECRET_KEY = pickle.load(f)
+
 
 # SECURITY WARNING: don"t run with debug turned on in production!
-DEBUG = config("DEBUG")
+with open("./data/config_variables/DEBUG.pkl", "rb") as f:
+    DEBUG = pickle.load(f)
 
 ALLOWED_HOSTS = ["*"]
 
-# EMAIL_USE_TLS = config("EMAIL_USE_TLS")
-# EMAIL_HOST = config("EMAIL_HOST")
-# EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-# EMAIL_PORT = config("EMAIL_PORT")
 
 # Application definition
 
@@ -81,14 +81,27 @@ WSGI_APPLICATION = "search_engine.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+with open("./data/config_variables/DB_NAME.pkl", "rb") as f:
+    DB_NAME = pickle.load(f)
+
+with open("./data/config_variables/DB_HOST.pkl", "rb") as f:
+    DB_HOST = pickle.load(f)
+
+with open("./data/config_variables/DB_USER.pkl", "rb") as f:
+    DB_USER = pickle.load(f)
+
+with open("./data/config_variables/DB_PASSWORD.pkl", "rb") as f:
+    DB_PASSWORD = pickle.load(f)
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": config("DB_NAME"),
-        "HOST": config("DB_HOST"),
+        "NAME": DB_NAME,
+        "HOST": DB_HOST,
         "PORT": "3306",
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
+        "USER": DB_USER,
+        "PASSWORD": DB_PASSWORD,
         "OPTIONS": {
             "charset": "utf8mb4",
         },
@@ -143,5 +156,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "signin-page"
 
 
-MEDIA_ROOT = BASE_DIR / "uploaded_media"
+MEDIA_ROOT = BASE_DIR / "data/uploaded_data"
 # MEDIA_URL = "/uploaded_media/"
+
+
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

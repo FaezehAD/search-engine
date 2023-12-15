@@ -5,31 +5,50 @@ from .similarity_search.utils.report_utils import *
 from .similarity_search.utils.utils import *
 from .similarity_search.utils.plagiarism import *
 from .similarity_search.utils.compare_texts import *
+from .similarity_search.utils.manage_variables import *
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 import json
 import requests
-from decouple import config
 from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from dotenv import *
+import pickle
 from django.core.paginator import Paginator
 
+with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
+    BASE_URL = pickle.load(f)
 
-threshold = config("THRESHOLD")
-show_feedback = config("SHOW_FEEDBACK")
-BASE_URL = config("BASE_URL")
+with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
+    DEFAULT_OPTION = pickle.load(f)
+
 normalizer = Normalizer()
 
 
 def index(request):
     logout(request)
+    session_id = request.session.session_key
+    print(f"session id: {session_id}")
+
+    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
+        DEFAULT_CHECKBOXES = pickle.load(f)
+    request.session["checkboxes"] = DEFAULT_CHECKBOXES
+
+    request.session["option"] = DEFAULT_OPTION
+
+    with open("./data/config_variables/DEFAULT_RAW_RESULTS_TITLE.pkl", "rb") as f:
+        DEFAULT_RAW_RESULTS_TITLE = pickle.load(f)
+    request.session["raw_results_title"] = DEFAULT_RAW_RESULTS_TITLE
+
+    with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
+        DEFAULT_SEARCH_METHOD = pickle.load(f)
+    request.session["search_method"] = DEFAULT_SEARCH_METHOD
+
     return render(
         request,
         "SE/index.html",
-        context={"option": get_option()},
+        context={"option": request.session.get("option", DEFAULT_OPTION)},
     )
 
 
@@ -38,20 +57,24 @@ def guide(request):
 
 
 def get_req_type(request):
+    data = None
+    req_type = 4  # normal search
     try:
         data = json.load(request)
         if "date" in data:  # sort
-            return (1, data)
+            req_type = 1
         elif "is_correct" in data:  # feedback
-            return (2, data)
+            req_type = 2
         elif "result_id" in data:  # click
-            return (3, data)
+            req_type = 3
     except Exception:
-        return (4, None)  # normal search
+        pass  # normal search
+    return (req_type, data)
 
 
 def search_results(request):
-    global BASE_URL
+    session_id = request.session.session_key
+    print(f"session id: {session_id}")
     req_type, data = get_req_type(request)
     if req_type == 1:
         departments = data["departments"]
@@ -60,14 +83,14 @@ def search_results(request):
         query = data["query"]
         if date == 1:
             if ascending == 1:
-                is_available, results = get_date_ascending()
+                is_available, results = get_date_ascending(request.session)
             else:
-                is_available, results = get_date_descending()
+                is_available, results = get_date_descending(request.session)
         else:
             if ascending == 1:
-                is_available, results = get_max_score()
+                is_available, results = get_max_score(request.session)
             else:
-                is_available, results = get_min_score()
+                is_available, results = get_min_score(request.session)
         if len(departments) != 0:
             is_available, results = filter_departments(results, departments)
         return HttpResponse(
@@ -76,7 +99,7 @@ def search_results(request):
                 context={
                     "results": results,
                     "is_available": is_available,
-                    "option": get_option(),
+                    "option": request.session.get("option", DEFAULT_OPTION),
                 },
             )
         )
@@ -100,8 +123,6 @@ def search_results(request):
 
     elif req_type == 3:  # click
         query_id = data["query_id"]
-        print(f"q: {query_id}")
-        print("==========================")
         result_id = data["result_id"]
         json_obj = {
             "script": {
@@ -111,14 +132,16 @@ def search_results(request):
             }
         }
         requests.post(f"{BASE_URL}logs/_update/{query_id}", json=json_obj)
-
         return HttpResponse()
 
     # now req_type is 4
 
+    id_without_dash = get_id_without_dash()
+    request.session["raw_results_title"] = id_without_dash
+
     query = request.POST.get("query")
     option = request.POST.get("options")
-    set_option(option)
+    request.session["option"] = option
     search_method = request.POST.get("search-method")
     people_list = list()
     start_year = end_year = -1
@@ -130,8 +153,8 @@ def search_results(request):
     checkboxes.append(search_method)
 
     if search_method:  # advanced search
-        set_checkboxes(checkboxes)
-        set_search_method(search_method)
+        request.session["checkboxes"] = checkboxes
+        request.session["search_method"] = search_method
 
     serial = verify_serial(
         convert_persian_number_to_english(request.POST.get("serial", ""))
@@ -149,7 +172,10 @@ def search_results(request):
     supervisory = request.POST.get("supervisory-checkbox", "")
     legislative = request.POST.get("legislative-checkbox", "")
     strategic = request.POST.get("strategic-checkbox", "")
-    search_method = get_search_method()
+    with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
+        DEFAULT_SEARCH_METHOD = pickle.load(f)
+
+    search_method = request.session.get("search_method", DEFAULT_SEARCH_METHOD)
     and_param = request.POST.get("and", "")
     or_param = request.POST.get("or", "")
     not_param = request.POST.get("not", "")
@@ -157,7 +183,6 @@ def search_results(request):
     if search_method == "2" and query != "":
         is_available, results = semantic_search(
             query,
-            option,
             start_year,
             end_year,
             serial,
@@ -165,11 +190,12 @@ def search_results(request):
             supervisory,
             legislative,
             strategic,
+            request.session,
+            id_without_dash,
         )
     else:
         is_available, results = syntactic_search(
             query,
-            option,
             start_year,
             end_year,
             serial,
@@ -181,9 +207,11 @@ def search_results(request):
             or_param,
             not_param,
             exact_param,
+            request.session,
+            id_without_dash,
         )
     if option == "report":
-        departments = get_departments_with_number(get_raw_results())
+        departments = get_departments_with_number(get_raw_results(request.session))
     else:
         departments = list()
     # store log
@@ -199,7 +227,9 @@ def search_results(request):
         if p is not None and p != "":
             report_people.append(p)
     search_fields = list()
-    search_checkboxes = get_checkboxes()
+    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
+        DEFAULT_CHECKBOXES = pickle.load(f)
+    search_checkboxes = request.session.get("checkboxes", DEFAULT_CHECKBOXES)
     if search_checkboxes[0] == "3":
         search_fields.append("عنوان")
     if search_checkboxes[1] == "4":
@@ -219,7 +249,6 @@ def search_results(request):
                     "feedback": "N",  # True, False, Neutral
                 }
             )
-    id_without_dash = get_id_without_dash()
     json_obj = {
         "is_semantic": (search_method == "2"),
         "main_query": query,
@@ -237,7 +266,9 @@ def search_results(request):
         "timestamp": get_timestamp(),
     }
     requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
-    print(results)
+    with open("./data/config_variables/SHOW_FEEDBACK.pkl", "rb") as f:
+        SHOW_FEEDBACK = pickle.load(f)
+
     return render(
         request,
         "SE/search_results.html",
@@ -246,7 +277,7 @@ def search_results(request):
             "results": results,
             "is_available": is_available,
             "departments": departments,
-            "show_feedback": config("SHOW_FEEDBACK"),
+            "show_feedback": SHOW_FEEDBACK,
             "query_id": id_without_dash,
             "option": option,
         },
@@ -254,7 +285,7 @@ def search_results(request):
 
 
 def advanced_search(request):
-    checkboxes = get_checkboxes()
+    checkboxes = request.session.get("checkboxes", ["3", "", "", "", "1"])
     return render(
         request,
         "SE/advanced_search.html",
@@ -264,7 +295,7 @@ def advanced_search(request):
             "abstracts_checkbox": checkboxes[2],
             "bodies_checkbox": checkboxes[3],
             "syntactic_radio": checkboxes[4],
-            "option": get_option(),
+            "option": request.session.get("option", "report"),
         },
     )
 
@@ -321,9 +352,13 @@ def signin(request):
         password = request.POST.get("pass")
 
         user = None
-        if username == config("ADMIN_USERNAME") and password == config(
-            "ADMIN_PASSWORD"
-        ):
+        with open("./data/config_variables/ADMIN_USERNAME.pkl", "rb") as f:
+            ADMIN_USERNAME = pickle.load(f)
+
+        with open("./data/config_variables/ADMIN_PASSWORD.pkl", "rb") as f:
+            ADMIN_PASSWORD = pickle.load(f)
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             user = authenticate(username=username, password=password)
 
         if user is not None:
@@ -350,19 +385,16 @@ def admin_panel(request):
 
 @login_required
 def settings_page(request):
-    global threshold
-    global show_feedback
+    with open("./data/config_variables/THRESHOLD.pkl", "rb") as f:
+        threshold = pickle.load(f)
+    with open("./data/config_variables/SHOW_FEEDBACK", "rb") as f:
+        show_feedback = pickle.load(f)
     if request.method == "POST":
-        threshold = int(float(request.POST.get("threshold")))
+        threshold = int(request.POST.get("threshold"))
         show_feedback = request.POST.get("feedback")
-        set_key(".env", "THRESHOLD", str(threshold))
-        if show_feedback == "T":
-            set_key(".env", "SHOW_FEEDBACK", "T")
-        else:
-            set_key(".env", "SHOW_FEEDBACK", "F")
-
+        set_threshold(threshold)
+        set_show_feedback(show_feedback)
         return redirect("admin-page")
-
     return render(
         request,
         "SE/settings.html",
@@ -491,7 +523,7 @@ def plagiarism_detection_input(request):
                     is_valid = True
                 else:
                     form.add_error(None, "لطفا متن را وارد کنید!")
-            else:
+            else:  # there is a file
                 if form.is_valid():
                     file = form.cleaned_data["file"]
                     print(file.name[-4:])
@@ -513,27 +545,6 @@ def plagiarism_detection_input(request):
     else:  # GET
         form = UploadFileForm()
     return render(request, "SE/plagiarism_input.html", {"form": form})
-
-
-def get_input_text(input_title):
-    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
-    try:
-        with open(f"{file_path}/input_text.txt", "r", encoding="utf_8") as file:
-            input_text = file.read()
-    except:
-        input_text = ""
-    return input_text
-
-
-def get_input_keywords(input_title):
-    input_keywords_list = list()
-    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
-    try:
-        with open(f"{file_path}/input_keywords.txt", "r", encoding="utf_8") as file:
-            input_keywords_list = split_string_by_newline(file.read())
-    except:
-        input_keywords_list = list()
-    return input_keywords_list
 
 
 def plagiarism_detection(request, input_title):

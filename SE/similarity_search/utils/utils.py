@@ -4,11 +4,14 @@ from .report_utils import *
 from .article_utils import *
 import datetime
 import pytz
-from persiantools.jdatetime import JalaliDateTime
+
+# from persiantools.jdatetime import JalaliDateTime
 import uuid
 from django.conf import settings
 import os
 from django import forms
+import pickle
+from khayyam import JalaliDatetime
 
 
 def print_fa(text):
@@ -141,15 +144,17 @@ def get_people(people_list, k, option):
 
 
 def get_timestamp():
-    curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
-    hour = curr_time.hour
-    minute = curr_time.minute
-    second = curr_time.second
-    curr_date = JalaliDateTime.now()
-    formatted_date = curr_date.strftime("%Y-%m-%d")
-    formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
-    curr_timestamp = f"{formatted_date} {formatted_time}"
-    return curr_timestamp
+    # curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
+    # hour = curr_time.hour
+    # minute = curr_time.minute
+    # second = curr_time.second
+    # curr_date = JalaliDateTime.now()
+    # formatted_date = curr_date.strftime("%Y-%m-%d")
+    # formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
+    # curr_timestamp = f"{formatted_date} {formatted_time}"
+    now = JalaliDatetime.now()
+    formatted_date_time = now.strftime("%Y/%m/%d %H:%M:%S")
+    return formatted_date_time
 
 
 def get_id_without_dash():
@@ -195,3 +200,25 @@ def save_file(input_title, input_text, input_keywords):
 
 def split_string_by_newline(input_str):
     return input_str.splitlines()
+
+
+def get_input_text(input_title):
+    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
+    try:
+        with open(f"{file_path}/input_text.txt", "r", encoding="utf_8") as file:
+            input_text = file.read()
+    except:
+        input_text = ""
+    return input_text
+
+
+def get_input_keywords(input_title):
+    input_keywords_list = list()
+    file_path = os.path.join(settings.MEDIA_ROOT, input_title)
+    try:
+        with open(f"{file_path}/input_keywords.txt", "r", encoding="utf_8") as file:
+            input_keywords_list = split_string_by_newline(file.read())
+    except:
+        input_keywords_list = list()
+    return input_keywords_list
+
