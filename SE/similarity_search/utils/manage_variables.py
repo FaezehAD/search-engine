@@ -66,19 +66,30 @@ def set_default_variables():
     with open("./../../../data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "wb") as f:
         pickle.dump(DEFAULT_SEARCH_METHOD, f)
 
-    DEFAULT_RAW_RESULTS_TITLE = ''
-    with open("./../../../data/config_variables/DEFAULT_RAW_RESULTS_TITLE.pkl", "wb") as f:
-        pickle.dump(DEFAULT_RAW_RESULTS_TITLE, f)
+    DEFAULT_QUERY_ID = None
+    with open(
+        "./../../../data/config_variables/DEFAULT_QUERY_ID.pkl", "wb"
+    ) as f:
+        pickle.dump(DEFAULT_QUERY_ID, f)
 
+    DEFAULT_PEOPLE_LIST = list()
+    with open(
+        "./../../../data/config_variables/DEFAULT_PEOPLE_LIST.pkl", "wb"
+    ) as f:
+        pickle.dump(DEFAULT_PEOPLE_LIST, f)
 
 def set_show_feedback(SHOW_FEEDBACK):
-    with open("./../../../data/config_variables/SHOW_FEEDBACK.pkl", "wb") as f:
+    with open("./data/config_variables/SHOW_FEEDBACK.pkl", "wb") as f:
         pickle.dump(SHOW_FEEDBACK, f)
 
 
 def set_threshold(THRESHOLD):
-    with open("./../../../data/config_variables/THRESHOLD.pkl", "wb") as f:
+    with open("./data/config_variables/THRESHOLD.pkl", "wb") as f:
         pickle.dump(THRESHOLD, f)
+
+
+# set_default_variables()
+
 
 
 # def get_SECRET_KEY():

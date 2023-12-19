@@ -59,7 +59,7 @@ function updateSearchResults() {
 
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
   let xhr = new XMLHttpRequest();
-  xhr.open("POST", "/search-engine/search", true);
+  xhr.open("POST", "/search-engine/search/", true);
   xhr.setRequestHeader("X-CSRFToken", csrftoken);
   xhr.setRequestHeader("Content-Type", "application/json");
 

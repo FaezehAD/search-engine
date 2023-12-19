@@ -37,9 +37,9 @@ def index(request):
 
     request.session["option"] = DEFAULT_OPTION
 
-    with open("./data/config_variables/DEFAULT_RAW_RESULTS_TITLE.pkl", "rb") as f:
-        DEFAULT_RAW_RESULTS_TITLE = pickle.load(f)
-    request.session["raw_results_title"] = DEFAULT_RAW_RESULTS_TITLE
+    with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
+        DEFAULT_QUERY_ID = pickle.load(f)
+    request.session["query_id"] =DEFAULT_QUERY_ID
 
     with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
         DEFAULT_SEARCH_METHOD = pickle.load(f)
@@ -137,12 +137,16 @@ def search_results(request):
     # now req_type is 4
 
     id_without_dash = get_id_without_dash()
-    request.session["raw_results_title"] = id_without_dash
+    request.session["query_id"] = id_without_dash
 
     query = request.POST.get("query")
+    request.session["query"] = query
+
     option = request.POST.get("options")
     request.session["option"] = option
+
     search_method = request.POST.get("search-method")
+
     people_list = list()
     start_year = end_year = -1
     checkboxes = list()
@@ -159,56 +163,45 @@ def search_results(request):
     serial = verify_serial(
         convert_persian_number_to_english(request.POST.get("serial", ""))
     )
-
+    request.session["serial"] = serial
     start_year = get_int(
         convert_persian_number_to_english(request.POST.get("start-year", "")), True
     )
+    request.session["start_year"] = start_year
     end_year = get_int(
         convert_persian_number_to_english(request.POST.get("end-year", "")), False
     )
+    request.session["end_year"] = end_year
     people_list.append(request.POST.get("people-1", ""))
     people_list.append(request.POST.get("people-2", ""))
     people_list.append(request.POST.get("people-3", ""))
+    request.session["people_list"] = people_list
+
     supervisory = request.POST.get("supervisory-checkbox", "")
+    request.session["supervisory"] = supervisory
     legislative = request.POST.get("legislative-checkbox", "")
+    request.session["legislative"] = legislative
     strategic = request.POST.get("strategic-checkbox", "")
+    request.session["strategic"] = strategic
     with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
         DEFAULT_SEARCH_METHOD = pickle.load(f)
 
     search_method = request.session.get("search_method", DEFAULT_SEARCH_METHOD)
     and_param = request.POST.get("and", "")
+    request.session["and_param"] = and_param
     or_param = request.POST.get("or", "")
+    request.session["or_param"] = or_param
     not_param = request.POST.get("not", "")
+    request.session["not_param"] = not_param
     exact_param = request.POST.get("exact", "")
+    request.session["exact_param"] = exact_param
     if search_method == "2" and query != "":
         is_available, results = semantic_search(
-            query,
-            start_year,
-            end_year,
-            serial,
-            people_list,
-            supervisory,
-            legislative,
-            strategic,
             request.session,
-            id_without_dash,
         )
     else:
         is_available, results = syntactic_search(
-            query,
-            start_year,
-            end_year,
-            serial,
-            people_list,
-            supervisory,
-            legislative,
-            strategic,
-            and_param,
-            or_param,
-            not_param,
-            exact_param,
             request.session,
-            id_without_dash,
         )
     if option == "report":
         departments = get_departments_with_number(get_raw_results(request.session))
@@ -387,7 +380,7 @@ def admin_panel(request):
 def settings_page(request):
     with open("./data/config_variables/THRESHOLD.pkl", "rb") as f:
         threshold = pickle.load(f)
-    with open("./data/config_variables/SHOW_FEEDBACK", "rb") as f:
+    with open("./data/config_variables/SHOW_FEEDBACK.pkl", "rb") as f:
         show_feedback = pickle.load(f)
     if request.method == "POST":
         threshold = int(request.POST.get("threshold"))

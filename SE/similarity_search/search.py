@@ -19,13 +19,21 @@ model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
 with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
     DEFAULT_OPTION = pickle.load(f)
 
+with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
+    DEFAULT_QUERY_ID = pickle.load(f)
+
+with open("./data/config_variables/DEFAULT_PEOPLE_LIST.pkl", "rb") as f:
+    DEFAULT_PEOPLE_LIST = pickle.load(f)
+
 
 def get_raw_results(request_session):
-    with open("./data/config_variables/DEFAULT_RAW_RESULTS_TITLE.pkl", "rb") as f:
-        DEFAULT_RAW_RESULTS_TITLE = pickle.load(f)
-    RAW_RESULTS_TITLE = request_session.get("raw_results_title", DEFAULT_RAW_RESULTS_TITLE)
-    with open(f"./data/raw_results/{RAW_RESULTS_TITLE}.pkl", "rb") as f:
-        raw_results= pickle.load(f)
+    with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
+        DEFAULT_QUERY_ID = pickle.load(f)
+    query_id = request_session.get(
+        "query_id", DEFAULT_QUERY_ID
+    )
+    with open(f"./data/raw_results/{query_id}.pkl", "rb") as f:
+        raw_results = pickle.load(f)
     new_raw = list()
     for r in raw_results:
         new_raw.append(r)
@@ -144,18 +152,18 @@ def get_syntactic_results(response_hits, option):
 
 
 def get_results(
-    start_year,
-    end_year,
     results,
-    serial,
-    people_list,
-    supervisory,
-    legislative,
-    strategic,
     request_session,
-    query_id,
 ):
     option = request_session.get("option", DEFAULT_OPTION)
+    start_year = request_session.get("start_year", -1)
+    end_year = request_session.get("end_year", -1)
+    serial = request_session.get("serial", "")
+    supervisory = request_session.get("supervisory", "")
+    legislative = request_session.get("legislative", "")
+    strategic = request_session.get("strategic", "")
+    people_list = request_session.get("people_list", DEFAULT_PEOPLE_LIST)
+    query_id = request_session.get("query_id", DEFAULT_QUERY_ID)
     if people_list is not None and len(people_list) != 0:
         results = verify_people(results, people_list, option)
     if option == "report":
@@ -170,27 +178,18 @@ def get_results(
         )
     raw_results = copy.copy(
         delete_outdated_results(delete_min_rate(results), start_year, end_year)
-    )    
+    )
     with open(f"./data/raw_results/{query_id}.pkl", "wb") as f:
         pickle.dump(raw_results, f)
-    request_session["raw_results_title"] = query_id
     return get_min_score(request_session)
 
 
 def semantic_search(
-    query,
-    start_year,
-    end_year,
-    input_serial,
-    people_list,
-    supervisory,
-    legislative,
-    strategic,
     request_session,
-    query_id,
 ):
+    query = request_session.get("query", "")
     option = request_session.get("option", DEFAULT_OPTION)
-    with open("./data/config_variables/CHECKBOXES.pkl", "rb") as f:
+    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
         DEFAULT_CHECKBOXES = pickle.load(f)
     checkboxes = request_session.get("checkboxes", DEFAULT_CHECKBOXES)
     results = None
@@ -246,38 +245,25 @@ def semantic_search(
     # print(I)
     # print(I[0])
     return get_results(
-        start_year,
-        end_year,
         results,
-        input_serial,
-        people_list,
-        supervisory,
-        legislative,
-        strategic,
-        query_id,
+        request_session,
     )
 
 
 def syntactic_search(
-    query,
-    start_year,
-    end_year,
-    input_serial,
-    people_list,
-    supervisory,
-    legislative,
-    strategic,
-    and_param,
-    or_param,
-    not_param,
-    exact_param,
     request_session,
-    query_id,
 ):
+    query = request_session.get("query", "")
     option = request_session.get("option", DEFAULT_OPTION)
+    input_serial = request_session.get("serial", "")
+    people_list = request_session.get("people_list", DEFAULT_PEOPLE_LIST)
     with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
         DEFAULT_CHECKBOXES = pickle.load(f)
     checkboxes = request_session.get("checkboxes", DEFAULT_CHECKBOXES)
+    and_param = request_session.get("and_param", "")
+    or_param = request_session.get("or_param", "")
+    not_param = request_session.get("not_param", "")
+    exact_param = request_session.get("exact_param", "")
     fields = list()
     if checkboxes[0] == "3":
         fields.append("title^6")
@@ -304,15 +290,8 @@ def syntactic_search(
                 input_serial = None
             else:  # people
                 return get_results(
-                    start_year,
-                    end_year,
                     get_people(people_list, k, option),
-                    None,
-                    None,
-                    supervisory,
-                    legislative,
-                    strategic,
-                    query_id,
+                    request_session,
                 )
         else:
             search_obj = {
@@ -332,14 +311,6 @@ def syntactic_search(
     )
 
     return get_results(
-        start_year,
-        end_year,
         get_syntactic_results(response.json()["hits"]["hits"], option),
-        input_serial,
-        people_list,
-        supervisory,
-        legislative,
-        strategic,
         request_session,
-        query_id,
     )
