@@ -28,9 +28,6 @@ normalizer = Normalizer()
 
 def index(request):
     logout(request)
-    session_id = request.session.session_key
-    print(f"session id: {session_id}")
-
     with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
         DEFAULT_CHECKBOXES = pickle.load(f)
     request.session["checkboxes"] = DEFAULT_CHECKBOXES
@@ -39,12 +36,14 @@ def index(request):
 
     with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
         DEFAULT_QUERY_ID = pickle.load(f)
-    request.session["query_id"] =DEFAULT_QUERY_ID
+    request.session["query_id"] = DEFAULT_QUERY_ID
 
     with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
         DEFAULT_SEARCH_METHOD = pickle.load(f)
     request.session["search_method"] = DEFAULT_SEARCH_METHOD
 
+    session_id = request.session.session_key
+    print(f"session id: {session_id}")
     return render(
         request,
         "SE/index.html",
@@ -154,7 +153,6 @@ def search_results(request):
     checkboxes.append(request.POST.get("keywords-checkbox", ""))
     checkboxes.append(request.POST.get("abstracts-checkbox", ""))
     checkboxes.append(request.POST.get("bodies-checkbox", ""))
-    checkboxes.append(search_method)
 
     if search_method:  # advanced search
         request.session["checkboxes"] = checkboxes
@@ -261,7 +259,6 @@ def search_results(request):
     requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
     with open("./data/config_variables/SHOW_FEEDBACK.pkl", "rb") as f:
         SHOW_FEEDBACK = pickle.load(f)
-
     return render(
         request,
         "SE/search_results.html",
@@ -504,15 +501,15 @@ def plagiarism_detection_input(request):
         form = UploadFileForm(request.POST, request.FILES)
         input_keywords = request.POST.get("input_keywords", "")
         is_valid = False
-        input_title = ""
+        file_title = ""
         if input_keywords == "":
             form.add_error(None, "لطفا کلمات کلیدی را وارد کنید!")
         else:
             if len(request.FILES) == 0:
                 input_text = request.POST.get("input_text", "")
                 if input_text != "" and input_keywords != "":
-                    input_title = get_id_without_dash() + "_" + get_timestamp()
-                    save_file(input_title, input_text, input_keywords)
+                    file_title = str(get_id_without_dash() + "_" + get_timestamp())
+                    save_file(file_title, input_text, input_keywords)
                     is_valid = True
                 else:
                     form.add_error(None, "لطفا متن را وارد کنید!")
@@ -527,14 +524,14 @@ def plagiarism_detection_input(request):
                         if content == "":
                             form.add_error(None, "لطفا فایل حاوی متن را وارد کنید!")
                         else:
-                            input_title = file.name[:-4] + "_" + get_timestamp()
-                            save_file(input_title, content, input_keywords)
+                            file_title = file.name[:-4] + "_" + get_timestamp()
+                            save_file(file_title, content, input_keywords)
                             is_valid = True
                 else:
                     errors = form.errors
                     print(errors)
         if is_valid:
-            return redirect("plagiarism-detection-page", input_title=input_title)
+            return redirect("plagiarism-detection-page", input_title=file_title)
     else:  # GET
         form = UploadFileForm()
     return render(request, "SE/plagiarism_input.html", {"form": form})

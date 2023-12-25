@@ -574,7 +574,10 @@ article div:nth-of-type(2) {
 }
 
 .top-row .right-col {
-  width: 20rem;
+  width: 20%;
+}
+.top-row .left-col {
+  width: 80%;
 }
 
 #main {

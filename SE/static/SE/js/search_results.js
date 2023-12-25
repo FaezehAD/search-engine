@@ -84,8 +84,6 @@ function feedbackClicked(event, isCorrect) {
   const parent = event.target.parentNode;
   var query_id = queryIdContainer.dataset.myparam;
 
-  console.log(query_id)
-
   var data = {
     result_id: parent.id,
     is_correct: isCorrect,
@@ -95,7 +93,7 @@ function feedbackClicked(event, isCorrect) {
 
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
   let xhr = new XMLHttpRequest();
-  xhr.open("POST", "/search-engine/search", true);
+  xhr.open("POST", "/search-engine/search/", true);
   xhr.setRequestHeader("X-CSRFToken", csrftoken);
   xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -166,7 +164,7 @@ function resultClicked(element) {
 
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
   let xhr = new XMLHttpRequest();
-  xhr.open("POST", "/search-engine/search", true);
+  xhr.open("POST", "/search-engine/search/", true);
   xhr.setRequestHeader("X-CSRFToken", csrftoken);
   xhr.setRequestHeader("Content-Type", "application/json");
 

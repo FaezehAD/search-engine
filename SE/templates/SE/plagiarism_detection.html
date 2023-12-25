@@ -35,10 +35,13 @@
         <div class="left-col">
             {% for keyword in input_keywords %}
                     {{keyword}}
+                    {% if not forloop.last %}
+                        -
+                    {% endif %}
             {% endfor %}
         </div>
     </div>
-    {% include "SE/includes/results.html" %}
+    {% include "SE/includes/results_with_compare.html" %}
 
 </div>
 

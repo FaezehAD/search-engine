@@ -1,0 +1,27 @@
+{% load static %}
+{% if is_available %}
+
+    <ul id="content">
+        {% for result in results %}
+        <li class="single_content">
+            <div id="with-feedback">
+                {% if show_feedback == "T" %}
+                <div class="svg-container" id="{{result.0.id}}">
+                    <img class="correct_normal" src="{% static 'SE/images/correct_normal.svg' %}" alt="">            
+                    <img class="correct_filled not-visible" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
+
+                    <img class="incorrect_normal" src="{% static 'SE/images/incorrect_normal.svg' %}" alt="">
+                    <img class="incorrect_filled not-visible" src="{% static 'SE/images/incorrect_filled.svg' %}" alt="">
+                </div>
+                {% endif %}
+                {% include "SE/includes/pure_results.html" %}
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p id="not-found">
+    نتیجه‌ای یافت نشد!
+</p>
+{% endif %}

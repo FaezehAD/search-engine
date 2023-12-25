@@ -1,0 +1,19 @@
+{% load static %}
+{% if is_available %}
+
+    <ul id="content">
+        {% for result in results %}
+        <li class="single_content">
+            <div id="with-feedback">
+                {% include "SE/includes/pure_results.html" %}
+                <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p id="not-found">
+    نتیجه‌ای یافت نشد!
+</p>
+{% endif %}

@@ -9,10 +9,10 @@ from .report_utils import *
 
 def check_plagiarism(input_text, input_keywords_list):
     
-    with open("./../data/config_variables/ELK_USER.pkl", "rb") as f:
+    with open("./data/config_variables/ELK_USER.pkl", "rb") as f:
         ELK_USER = pickle.load(f)
 
-    with open("./../data/config_variables/ELK_PASSWORD.pkl", "rb") as f:
+    with open("./data/config_variables/ELK_PASSWORD.pkl", "rb") as f:
         ELK_PASSWORD = pickle.load(f)
 
     es = Elasticsearch(
@@ -82,5 +82,6 @@ def check_plagiarism(input_text, input_keywords_list):
 
 # check_plagiarism(
 #     "با نقش‌آفرینی ایران و دیگر متحدان سوریه، امنیت نسبی در این کشور برقرار شده و با شروع دوره بازسازی، این کشور نیازمند آن است تا با احیای توان گذشته و تقویت بخش‌های مهم اقتصادی و تجاری، خسارت‌های ناشی از بحران را جبران کند.",
+#با نقش‌آفرینی ایران و دیگر متحدان سوریه، امنیت نسبی در این کشور برقرار شده و با شروع دوره بازسازی، این کشور نیازمند آن است تا با احیای توان گذشته و تقویت بخش‌های مهم اقتصادی و تجاری، خسارت‌های ناشی از بحران را جبران کند.
 #     ["دیپلماسی اقتصادی"],
 # )

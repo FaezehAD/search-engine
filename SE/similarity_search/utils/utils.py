@@ -2,16 +2,11 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 from .report_utils import *
 from .article_utils import *
-import datetime
-import pytz
-
-# from persiantools.jdatetime import JalaliDateTime
 import uuid
 from django.conf import settings
 import os
 from django import forms
-import pickle
-from khayyam import JalaliDatetime
+from khayyam import JalaliDatetime, TehranTimezone
 
 
 def print_fa(text):
@@ -144,16 +139,8 @@ def get_people(people_list, k, option):
 
 
 def get_timestamp():
-    # curr_time = datetime.datetime.now(pytz.timezone("Asia/Tehran"))
-    # hour = curr_time.hour
-    # minute = curr_time.minute
-    # second = curr_time.second
-    # curr_date = JalaliDateTime.now()
-    # formatted_date = curr_date.strftime("%Y-%m-%d")
-    # formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, second)
-    # curr_timestamp = f"{formatted_date} {formatted_time}"
-    now = JalaliDatetime.now()
-    formatted_date_time = now.strftime("%Y/%m/%d %H:%M:%S")
+    current_time = JalaliDatetime.now(TehranTimezone())
+    formatted_date_time = current_time.strftime('%y-%m-%d %H:%M:%S')
     return formatted_date_time
 
 
@@ -221,4 +208,3 @@ def get_input_keywords(input_title):
     except:
         input_keywords_list = list()
     return input_keywords_list
-

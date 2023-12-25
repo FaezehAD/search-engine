@@ -1,22 +1,7 @@
 {% load static %}
-{% if is_available %}
 
-    <ul id="content">
-        {% for result in results %}
-        <li class="single_content">
-            <div id="with-feedback">
-                {% if show_feedback %}
-                    <div class="svg-container" id="{{result.0.id}}">
-                        <img class="correct_normal" src="{% static 'SE/images/correct_normal.svg' %}" alt="">            
-                        <img class="correct_filled not-visible" src="{% static 'SE/images/correct_filled.svg' %}" alt="">
-
-                        <img class="incorrect_normal" src="{% static 'SE/images/incorrect_normal.svg' %}" alt="">
-                        <img class="incorrect_filled not-visible" src="{% static 'SE/images/incorrect_filled.svg' %}" alt="">
-                    </div>
-                {% endif %}
-                <div class="main-container">
+            <div class="main-container">
                     <div class="button-container">
-                        
                         {% if option == "report" %}
                             <button style="background: rgb(245, 78, 44) !important;">
                                 <img src="{% static 'SE/images/report.svg' %}" alt="">
@@ -185,16 +170,3 @@
                             {% endif %}
                         </div>
                     </a>
-                    {% if not show_feedback %}
-                        <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
-                    {% endif %}
-                </div>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p id="not-found">
-        نتیجه‌ای یافت نشد!
-    </p>
-{% endif %}
