@@ -35,8 +35,9 @@ def get_raw_results(request_session):
     with open(f"./data/raw_results/{query_id}.pkl", "rb") as f:
         raw_results = pickle.load(f)
     new_raw = list()
-    for r in raw_results:
-        new_raw.append(r)
+    if raw_results is not None:
+        for r in raw_results:
+            new_raw.append(r)
     return new_raw
 
 

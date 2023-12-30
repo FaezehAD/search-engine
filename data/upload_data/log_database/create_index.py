@@ -2,16 +2,15 @@
 import requests
 import pickle
 import uuid
-# from SE.utils import manage_variables
-
-# with open("./../data/config_variables/BASE_URL.pkl", "rb") as f:
-#     BASE_URL = pickle.load(f)
-
 from SE.similarity_search.utils.manage_variables import *
 
-print(get_BASE_URL())
-# response = requests.get(BASE_URL + "_cat/indices/", timeout=30)
-# print(f"response: {response.text}")
+
+with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
+    BASE_URL = pickle.load(f)
+
+
+response = requests.get(BASE_URL + "_cat/indices/", timeout=30)
+print(f"response: {response.text}")
 
 
 # response=requests.delete(BASE_URL + "logs/",timeout=30)
@@ -130,7 +129,7 @@ print(get_BASE_URL())
 #     }
 # }
 
-# response = requests.put(BASE_URL + "logs/",
+# response = requests.put(BASE_URL + "logs2/",
 #                         headers={"Content-Type": "application/json"},
 #                         json=json_obj,
 #                         timeout=30)

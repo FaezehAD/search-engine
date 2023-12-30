@@ -51,14 +51,14 @@
         <section>
             <div class="radio">
             <input type="radio" id="syntactic-radio" name="search-method" value="1"
-                   {% if syntactic_radio == "1" %} checked {% endif %}
+                   {% if search_method == "1" %} checked {% endif %}
                    onclick="toggleSearch()">
             <label for="syntactic-radio">جست‌وجوی واژگانی</label><br>
             </div>
 
             <div class="radio">
                 <input type="radio" id="semantic-radio" name="search-method" value="2"
-                       {% if syntactic_radio == "2" %} checked {% endif %}
+                       {% if search_method == "2" %} checked {% endif %}
                        onclick="toggleSearch()">
                 <label for="semantic-radio">جست‌وجوی معنایی</label>
             </div>

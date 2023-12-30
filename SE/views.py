@@ -23,13 +23,18 @@ with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
 with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
     DEFAULT_OPTION = pickle.load(f)
 
+with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
+    DEFAULT_CHECKBOXES = pickle.load(f)
+
+with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
+    DEFAULT_SEARCH_METHOD = pickle.load(f)
+
+
 normalizer = Normalizer()
 
 
 def index(request):
     logout(request)
-    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
-        DEFAULT_CHECKBOXES = pickle.load(f)
     request.session["checkboxes"] = DEFAULT_CHECKBOXES
 
     request.session["option"] = DEFAULT_OPTION
@@ -38,8 +43,6 @@ def index(request):
         DEFAULT_QUERY_ID = pickle.load(f)
     request.session["query_id"] = DEFAULT_QUERY_ID
 
-    with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
-        DEFAULT_SEARCH_METHOD = pickle.load(f)
     request.session["search_method"] = DEFAULT_SEARCH_METHOD
 
     session_id = request.session.session_key
@@ -181,8 +184,6 @@ def search_results(request):
     request.session["legislative"] = legislative
     strategic = request.POST.get("strategic-checkbox", "")
     request.session["strategic"] = strategic
-    with open("./data/config_variables/DEFAULT_SEARCH_METHOD.pkl", "rb") as f:
-        DEFAULT_SEARCH_METHOD = pickle.load(f)
 
     search_method = request.session.get("search_method", DEFAULT_SEARCH_METHOD)
     and_param = request.POST.get("and", "")
@@ -218,8 +219,6 @@ def search_results(request):
         if p is not None and p != "":
             report_people.append(p)
     search_fields = list()
-    with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
-        DEFAULT_CHECKBOXES = pickle.load(f)
     search_checkboxes = request.session.get("checkboxes", DEFAULT_CHECKBOXES)
     if search_checkboxes[0] == "3":
         search_fields.append("عنوان")
@@ -257,6 +256,7 @@ def search_results(request):
         "timestamp": get_timestamp(),
     }
     requests.post(f"{BASE_URL}logs/_doc/{id_without_dash}", json=json_obj, timeout=30)
+    requests.post(f"{BASE_URL}logs2/_doc/{id_without_dash}", json=json_obj, timeout=30)
     with open("./data/config_variables/SHOW_FEEDBACK.pkl", "rb") as f:
         SHOW_FEEDBACK = pickle.load(f)
     return render(
@@ -275,7 +275,7 @@ def search_results(request):
 
 
 def advanced_search(request):
-    checkboxes = request.session.get("checkboxes", ["3", "", "", "", "1"])
+    checkboxes = request.session.get("checkboxes", DEFAULT_CHECKBOXES)
     return render(
         request,
         "SE/advanced_search.html",
@@ -284,7 +284,9 @@ def advanced_search(request):
             "keywords_checkbox": checkboxes[1],
             "abstracts_checkbox": checkboxes[2],
             "bodies_checkbox": checkboxes[3],
-            "syntactic_radio": checkboxes[4],
+            "search_method": request.session.get(
+                "search_method", DEFAULT_SEARCH_METHOD
+            ),
             "option": request.session.get("option", "report"),
         },
     )

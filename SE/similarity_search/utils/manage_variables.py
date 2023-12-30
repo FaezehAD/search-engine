@@ -58,7 +58,7 @@ def set_default_variables():
     with open("./../../../data/config_variables/DEFAULT_OPTION.pkl", "wb") as f:
         pickle.dump(DEFAULT_OPTION, f)
 
-    DEFAULT_CHECKBOXES = ["3", "", "", "", "1"]
+    DEFAULT_CHECKBOXES = ["3", "", "", ""] #title, keyword, abstract, body
     with open("./../../../data/config_variables/DEFAULT_CHECKBOXES.pkl", "wb") as f:
         pickle.dump(DEFAULT_CHECKBOXES, f)
 
