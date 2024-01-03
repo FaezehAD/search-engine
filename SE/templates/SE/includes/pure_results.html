@@ -17,8 +17,8 @@
 
                         
                         <button>    
-                            {% if option == "report" and result.0.dl_path %}
-                                <a href="{{result.0.dl_path}}">
+                            {% if option == "report" and result.doc.dl_path %}
+                                <a href="{{result.doc.dl_path}}">
                                     <img src="{% static 'SE/images/pdf.svg' %}" alt="">
                                     دانلود
                                 </a>
@@ -30,9 +30,9 @@
                         </button>
                     </div>
                     {% if option == "report"%}
-                        <a href="{% url 'report-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
+                        <a href="{% url 'report-detail-page' id=result.doc.id %}" id="{{result.doc.id}}" onclick="resultClicked(this)">
                     {% elif option == "article" %}
-                        <a href="{% url 'article-detail-page' id=result.0.id %}" id="{{result.0.id}}" onclick="resultClicked(this)">
+                        <a href="{% url 'article-detail-page' id=result.doc.id %}" id="{{result.doc.id}}" onclick="resultClicked(this)">
                     {% endif %}        
                         <div class="table-container">
                             <div class="row">
@@ -40,7 +40,7 @@
                                     عنوان:
                                 </div>
                                 <div class="second-col">
-                                    {{result.0.title}}
+                                    {{result.doc.title}}
                                 </div>
                             </div>
                             {% if option == 'report'%}
@@ -49,8 +49,8 @@
                                         تاریخ انتشار:
                                     </div>
                                     <div class="second-col">
-                                        {% if result.0.publication_date %}
-                                            {{result.0.publication_date}}
+                                        {% if result.doc.publication_date %}
+                                            {{result.doc.publication_date}}
                                         {% else %}
                                             -
                                         {% endif %}
@@ -61,8 +61,8 @@
                                         شماره مسلسل:
                                     </div>
                                     <div class="second-col">
-                                        {% if result.0.serial %}
-                                            {{result.0.serial}}
+                                        {% if result.doc.serial %}
+                                            {{result.doc.serial}}
                                         {% else %}
                                             -
                                         {% endif %}
@@ -73,8 +73,8 @@
                                         نوع:
                                     </div>
                                     <div class="second-col">
-                                        {% if result.0.report_type %}
-                                            {{result.0.report_type}}
+                                        {% if result.doc.report_type %}
+                                            {{result.doc.report_type}}
                                         {% else %}
                                             -
                                         {% endif %}
@@ -85,8 +85,8 @@
                                         دفاتر:
                                     </div>
                                     <div class="second-col">
-                                        {% if result.4 %}
-                                            {% for department in result.4 %}
+                                        {% if result.departments %}
+                                            {% for department in result.departments %}
                                                 <p>
                                                     {{department.name}}
                                                     {% if not forloop.last %}
@@ -107,8 +107,8 @@
                                         سال نشر:
                                     </div>
                                     <div class="second-col">
-                                        {% if result.0.year %}
-                                            {{result.0.year}}
+                                        {% if result.doc.year %}
+                                            {{result.doc.year}}
                                         {% else %}
                                             -
                                         {% endif %}
@@ -120,8 +120,8 @@
                                     کلیدواژه:
                                 </div>
                                 <div class="second-col">
-                                    {% if result.2 or result.3 %}
-                                        {% for keyword in result.2 %}
+                                    {% if result.persian_keywords or result.english_keywords %}
+                                        {% for keyword in result.persian_keywords %}
                                             <p>
                                                 {{keyword.value}}
                                                 {% if not forloop.last %}
@@ -129,7 +129,7 @@
                                                 {% endif %}
                                             </p>
                                         {% endfor %}
-                                        {% for keyword in result.3 %}
+                                        {% for keyword in result.english_keywords %}
                                             <p>
                                                 {{keyword.value}}
                                                 {% if not forloop.last %}
@@ -149,8 +149,8 @@
                                     چکیده:
                                 </div>
                                 <div class="second-col">
-                                    {% if result.0.abstract %}
-                                        <div class="truncate-to-2-lines justify">{{result.0.abstract}}</div>
+                                    {% if result.doc.abstract %}
+                                        <div class="truncate-to-2-lines justify">{{result.doc.abstract}}</div>
                                     {% else %}
                                     <div>
                                         -
@@ -158,13 +158,13 @@
                                     {% endif %} 
                                 </div>
                             </div>
-                            {% if result.1 != 200 %}
+                            {% if result.rate != 200 %}
                                 <div class="row">
                                     <div class="first-col">
                                         درجه شباهت:
                                     </div>
                                     <div class="second-col">
-                                        {{result.1}}%
+                                        {{result.rate}}%
                                     </div>
                                 </div>
                             {% endif %}

@@ -233,8 +233,8 @@ def search_results(request):
         for r in results:
             results_list.append(
                 {
-                    "result_id": str(r[0].id),
-                    "title": r[0].title,
+                    "result_id": str(r.doc.id),
+                    "title": r.doc.title,
                     "click": False,
                     "feedback": "N",  # True, False, Neutral
                 }

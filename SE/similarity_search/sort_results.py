@@ -37,8 +37,8 @@ def selection_sort(arr, date, asc, option):
         for i in range(n):
             min_index = i
             for j in range(i + 1, n):
-                first_result = arr[j][0]
-                second_result = arr[min_index][0]
+                first_result = arr[j].doc
+                second_result = arr[min_index].doc
                 if option == "report":
                     first_year = int(first_result.publication_date[:4])
                     first_month = int(first_result.publication_date[5:7])
@@ -68,8 +68,8 @@ def selection_sort(arr, date, asc, option):
             for j in range(i + 1, n):
                 first_result = arr[j]
                 second_result = arr[min_index]
-                first_score = first_result[1]
-                second_score = second_result[1]
+                first_score = first_result.rate
+                second_score = second_result.rate
                 if asc:
                     if second_score > first_score:
                         min_index = j
@@ -87,12 +87,12 @@ def sort_results_date(results, asc, option):
     i = 0
     while i < length:
         if option == "report":
-            if results[i][0].publication_date == "":
+            if results[i].doc.publication_date == "":
                 results.pop(i)
                 i = i - 1
                 length = length - 1
         elif option == "article":
-            if results[i][0].year == "":
+            if results[i].doc.year == "":
                 results.pop(i)
                 i = i - 1
                 length = length - 1
@@ -110,7 +110,7 @@ def delete_min_rate(results):
     length = len(results)
     i = 0
     while i < length:
-        if results[i][1] < THRESHOLD:
+        if results[i].rate < THRESHOLD:
             results.pop(i)
             i = i - 1
             length = length - 1
@@ -132,7 +132,7 @@ def delete_outdated_results(results, start_year, end_year):
     length = len(results)
     i = 0
     while i < length:
-        year = results[i][0].year
+        year = results[i].doc.year
         if year < start_year or year > end_year:
             results.pop(i)
             i = i - 1

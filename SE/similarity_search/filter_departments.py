@@ -54,10 +54,10 @@ def get_departments_with_number(results):
         result_ids_list = list()
         for d in department_list:
             for result in results:
-                result_id = result[0].id
+                result_id =  result.doc.id
                 if result_id in result_ids_list:
                     continue
-                for department in result[0].departments.all():
+                for department in result.doc.departments.all():
                     department_name = department.name.strip()[0 : len(d)]
                     if department_name == d:
                         result_ids_list.append(result_id)
@@ -75,7 +75,7 @@ def filter_departments(results, selected_departments):
     i = 0
     while i < length:
         is_in_departments = False
-        for d in results[i][0].departments.all():
+        for d in results[i].doc.departments.all():
             for index in indices:
                 for department in departments[index]:
                     d_name = d.name.strip()[0 : len(department)]

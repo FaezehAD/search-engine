@@ -9,6 +9,8 @@ from .utils.utils import *
 from .utils.report_utils import *
 from .filter_departments import *
 import pickle
+from .utils.result import *
+from elasticsearch import Elasticsearch
 
 
 with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
@@ -25,13 +27,23 @@ with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
 with open("./data/config_variables/DEFAULT_PEOPLE_LIST.pkl", "rb") as f:
     DEFAULT_PEOPLE_LIST = pickle.load(f)
 
+with open("./data/config_variables/ELK_USER.pkl", "rb") as f:
+    ELK_USER = pickle.load(f)
+
+with open("./data/config_variables/ELK_PASSWORD.pkl", "rb") as f:
+    ELK_PASSWORD = pickle.load(f)
+
+es = Elasticsearch(
+    hosts=["http://localhost:9200"],
+    basic_auth=(ELK_USER, ELK_PASSWORD),
+    timeout=30,
+)
+
 
 def get_raw_results(request_session):
     with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
         DEFAULT_QUERY_ID = pickle.load(f)
-    query_id = request_session.get(
-        "query_id", DEFAULT_QUERY_ID
-    )
+    query_id = request_session.get("query_id", DEFAULT_QUERY_ID)
     with open(f"./data/raw_results/{query_id}.pkl", "rb") as f:
         raw_results = pickle.load(f)
     new_raw = list()
@@ -125,9 +137,8 @@ def get_semantic_results(indices, ids, xq, embeddings, option):
             result = Article.objects.get(pk=id)
             departments = list()
             persian_keywords, english_keywords = get_article_details(result)
-
         results.append(
-            (
+            Result(
                 result,
                 round(score.item() * 100, 2),
                 persian_keywords,
@@ -148,7 +159,11 @@ def get_syntactic_results(response_hits, option):
         elif option == "article":
             result = Article.objects.get(pk=item["_id"])
             persian_keywords, english_keywords = get_article_details(result)
-        results.append((result, 200, persian_keywords, english_keywords, departments))
+        # doc = item["_source"]
+        # rate = es.similarity(query=query, doc=doc, method="cosine")
+        results.append(
+            Result(result, 200, persian_keywords, english_keywords, departments)
+        )
     return results
 
 

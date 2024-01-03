@@ -125,7 +125,7 @@ input[type="search"]::-webkit-search-cancel-button {
 #search-section {
   display: flex;
   align-items: flex-start;
-  top: 8%;
+  top: 5rem;
   right: 0;
   width: 100%;
 }

@@ -5,10 +5,10 @@ import pickle
 import collections
 import numpy as np
 from .report_utils import *
+from .result import *
 
 
 def check_plagiarism(input_text, input_keywords_list):
-    
     with open("./data/config_variables/ELK_USER.pkl", "rb") as f:
         ELK_USER = pickle.load(f)
 
@@ -39,7 +39,7 @@ def check_plagiarism(input_text, input_keywords_list):
 
     match_size = max(int(len(input_keywords_list) / 2), 1)
 
-    result = []
+    results = []
 
     for term in all_ngram_phrase:
         response = es.search(
@@ -51,7 +51,7 @@ def check_plagiarism(input_text, input_keywords_list):
                             "bool": {
                                 "minimum_should_match": match_size,
                                 "should": [
-                                    {"match_phrase": {"persian_keywords": key}}
+                                    {"match": {"persian_keywords": key}}
                                     for key in input_keywords_list
                                 ],
                             }
@@ -62,9 +62,9 @@ def check_plagiarism(input_text, input_keywords_list):
             },
         )
         data = response["hits"]["hits"]
-        result.extend(set([r["_id"] for r in data]))
+        results.extend(set([r["_id"] for r in data]))
 
-    id_count = collections.Counter(result).most_common()
+    id_count = collections.Counter(results).most_common()
 
     id_percent = list()
     for i in id_count:
@@ -74,14 +74,13 @@ def check_plagiarism(input_text, input_keywords_list):
             break
         persian_keywords, english_keywords, departments = get_report_details(result)
         id_percent.append(
-            (result, rate, persian_keywords, english_keywords, departments)
+            Result(result, rate, persian_keywords, english_keywords, departments)
         )
-
     return id_percent
 
 
 # check_plagiarism(
 #     "با نقش‌آفرینی ایران و دیگر متحدان سوریه، امنیت نسبی در این کشور برقرار شده و با شروع دوره بازسازی، این کشور نیازمند آن است تا با احیای توان گذشته و تقویت بخش‌های مهم اقتصادی و تجاری، خسارت‌های ناشی از بحران را جبران کند.",
-#با نقش‌آفرینی ایران و دیگر متحدان سوریه، امنیت نسبی در این کشور برقرار شده و با شروع دوره بازسازی، این کشور نیازمند آن است تا با احیای توان گذشته و تقویت بخش‌های مهم اقتصادی و تجاری، خسارت‌های ناشی از بحران را جبران کند.
+# با نقش‌آفرینی ایران و دیگر متحدان سوریه، امنیت نسبی در این کشور برقرار شده و با شروع دوره بازسازی، این کشور نیازمند آن است تا با احیای توان گذشته و تقویت بخش‌های مهم اقتصادی و تجاری، خسارت‌های ناشی از بحران را جبران کند.
 #     ["دیپلماسی اقتصادی"],
 # )

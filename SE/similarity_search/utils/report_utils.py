@@ -130,7 +130,7 @@ def verify_serials(results, input_serial):
     length = len(results)
     i = 0
     while i < length:
-        if serial not in results[i][0].serial:
+        if serial not in results[i].doc.serial:
             results.pop(i)
             i = i - 1
             length = length - 1
@@ -384,7 +384,7 @@ def verify_types(results, supervisory, legislative, strategic):
     length = len(results)
     i = 0
     while i < length:
-        report_type = results[i][0].report_type
+        report_type = results[i].doc.report_type
         remain = False
         if supervisory == "7":
             if report_type == "نظارتی":

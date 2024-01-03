@@ -7,6 +7,7 @@ from django.conf import settings
 import os
 from django import forms
 from khayyam import JalaliDatetime, TehranTimezone
+from .result import *
 
 
 def print_fa(text):
@@ -82,9 +83,9 @@ def verify_people(results, people_list, option):
     while i < length:
         person_exists = False
         if option == "report":
-            result_people = get_report_people(results[i][0])  # 2D array
+            result_people = get_report_people(results[i].doc)  # 2D array
         elif option == "article":
-            result_people = get_article_people(results[i][0])
+            result_people = get_article_people(results[i].doc)
         for result_list in result_people:
             for p in result_list:
                 for person in people_list:
@@ -120,19 +121,17 @@ def get_people(people_list, k, option):
                 results.append(get_article_people_filter(people))
     final_results = list()
     for r in results[0]:
-        for result in r:  # result = Article
+        for result in r:
+            departments = list()
             if option == "report":
                 persian_keywords, english_keywords, departments = get_report_details(
                     result
                 )
-                final_results.append(
-                    (result, 200, persian_keywords, english_keywords, departments)
-                )
             elif option == "article":
                 persian_keywords, english_keywords = get_article_details(result)
-                final_results.append(
-                    (result, 200, persian_keywords, english_keywords, list())
-                )
+            final_results.append(
+                Result(result, 200, persian_keywords, english_keywords, departments)
+            )
     if len(final_results) == 0:
         return None
     return final_results[0:k]
@@ -140,7 +139,7 @@ def get_people(people_list, k, option):
 
 def get_timestamp():
     current_time = JalaliDatetime.now(TehranTimezone())
-    formatted_date_time = current_time.strftime('%y-%m-%d %H:%M:%S')
+    formatted_date_time = current_time.strftime("%y-%m-%d %H:%M:%S")
     return formatted_date_time
 
 

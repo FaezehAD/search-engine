@@ -6,7 +6,7 @@
         <li class="single_content">
             <div id="with-feedback">
                 {% include "SE/includes/pure_results.html" %}
-                <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.0.id %}" id="{{result.0.id}}">مقایسه</a>
+                <a id="compare" href="{% url 'compare-texts-page' input_title=input_title id=result.doc.id %}" id="{{result.doc.id}}">مقایسه</a>
             </div>
         </div>
     </li>

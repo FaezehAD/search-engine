@@ -29,7 +29,6 @@ def compare_strings(str1, str2):
             "\n<span class='highlight'>" + concat_string(matching_part) + "</span>\n"
         )
         i = match.a + match.size
-        print(concat_string(matching_part))
 
     non_matching_part = str1[i:]
     output += concat_string(non_matching_part)
