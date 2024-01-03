@@ -15,4 +15,7 @@ Furthermore, there is an admin area which is the control part of the system. Adm
 
 
 
-
+![Picture5](https://github.com/FaezehAD/search-engine/assets/67324141/13a2f1e6-def6-4378-8fff-d1af98429c27)
+![Picture4](https://github.com/FaezehAD/search-engine/assets/67324141/ac56a714-1e4b-4aca-84bf-b1d147a02343)
+![Picture1](https://github.com/FaezehAD/search-engine/assets/67324141/38924939-f2e4-4d19-90d3-e49c32177f4d)
+![Picture2](https://github.com/FaezehAD/search-engine/assets/67324141/3a22cde4-35e4-4990-817d-2b9fee6819ca)
