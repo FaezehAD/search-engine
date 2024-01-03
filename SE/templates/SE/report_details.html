@@ -563,9 +563,12 @@
                 {% endif %}
             </div>
         </div>
-        <div id="qr-container">
-            <img src="data:image/png;base64,{{ qr_code|base64_encode }}" alt="QR code">
-        </div>
+
+        {% if qr_code %}
+            <div id="qr-container">
+                <img src="data:image/png;base64,{{ qr_code|base64_encode }}" alt="QR code">
+            </div>
+        {% endif %}
 
     </div>
 </div>

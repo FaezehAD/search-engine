@@ -309,13 +309,17 @@ def article_details(request, id):
 def report_details(request, id):
     identified_report = get_object_or_404(Report, id=id)
     report_url = "https://rc.majlis.ir" + identified_report.path
-    response = requests.get(report_url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    images = soup.find_all(
-        "img", src=lambda src: src.startswith("https://rc.majlis.ir/")
-    )
-    response = requests.get([image["src"] for image in images][0])
-    image_content = response.content
+    image_content = None
+    try:
+        response = requests.get(report_url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        images = soup.find_all(
+            "img", src=lambda src: src.startswith("https://rc.majlis.ir/")
+        )
+        response = requests.get([image["src"] for image in images][0])
+        image_content = response.content
+    except Exception as e:
+        print(e)
     departments = get_departments()
 
     index = find_img_index(identified_report.departments.all(), departments)
