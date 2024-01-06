@@ -1,14 +1,14 @@
 import arabic_reshaper
 from bidi.algorithm import get_display
-from .report_utils import *
-from .article_utils import *
-from .result import *
 import uuid
 from django.conf import settings
 import os
 from django import forms
 from persiantools.jdatetime import JalaliDateTime
 import pytz
+from .report_utils import *
+from .article_utils import *
+from .result import *
 
 
 def print_fa(text):
