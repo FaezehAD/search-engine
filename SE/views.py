@@ -45,8 +45,6 @@ def index(request):
 
     request.session["search_method"] = DEFAULT_SEARCH_METHOD
 
-    session_id = request.session.session_key
-    print(f"session id: {session_id}")
     return render(
         request,
         "SE/index.html",
@@ -75,8 +73,6 @@ def get_req_type(request):
 
 
 def search_results(request):
-    session_id = request.session.session_key
-    print(f"session id: {session_id}")
     req_type, data = get_req_type(request)
     if req_type == 1:
         departments = data["departments"]
@@ -522,7 +518,6 @@ def plagiarism_detection_input(request):
             else:  # there is a file
                 if form.is_valid():
                     file = form.cleaned_data["file"]
-                    print(file.name[-4:])
                     if file.name[-4:] != ".txt":
                         form.add_error(None, "لطفا فایل با فرمت txt. را وارد کنید!")
                     else:
@@ -535,7 +530,6 @@ def plagiarism_detection_input(request):
                             is_valid = True
                 else:
                     errors = form.errors
-                    print(errors)
         if is_valid:
             return redirect("plagiarism-detection-page", input_title=file_title)
     else:  # GET

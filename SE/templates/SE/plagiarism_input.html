@@ -16,6 +16,9 @@
 
 {% block content %}
 
+<div id="loader-cotainer"></div>
+<div class="loader" id="loader"></div>
+
 <main>
 
     <article>
@@ -56,7 +59,7 @@
             {{ form.input_keywords }}
         </div>
 
-        <button type="submit">ارسال</button>
+        <button type="submit" onclick="disableButton()">ارسال</button>
 
     </form>
 

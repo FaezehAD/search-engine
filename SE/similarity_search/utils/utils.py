@@ -2,12 +2,13 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 from .report_utils import *
 from .article_utils import *
+from .result import *
 import uuid
 from django.conf import settings
 import os
 from django import forms
-from khayyam import JalaliDatetime, TehranTimezone
-from .result import *
+from persiantools.jdatetime import JalaliDateTime
+import pytz
 
 
 def print_fa(text):
@@ -138,8 +139,8 @@ def get_people(people_list, k, option):
 
 
 def get_timestamp():
-    current_time = JalaliDatetime.now(TehranTimezone())
-    formatted_date_time = current_time.strftime("%y-%m-%d %H:%M:%S")
+    curr_date = JalaliDateTime.now(pytz.timezone("Asia/Tehran"))
+    formatted_date_time = curr_date.strftime("%y-%m-%d %H:%M:%S")
     return formatted_date_time
 
 
