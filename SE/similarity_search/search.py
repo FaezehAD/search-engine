@@ -2,6 +2,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer, util
 import requests
 import copy
+from elasticsearch import Elasticsearch
+from hazm import Normalizer
 from SE.models import *
 from .load_indices import *
 from .sort_results import *
@@ -10,22 +12,10 @@ from .utils.report_utils import *
 from .filter_departments import *
 import pickle
 from .utils.result import *
-from elasticsearch import Elasticsearch
 
-
-with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
-    BASE_URL = pickle.load(f)
+normalizer = Normalizer()
 
 model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-
-with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
-    DEFAULT_OPTION = pickle.load(f)
-
-with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
-    DEFAULT_QUERY_ID = pickle.load(f)
-
-with open("./data/config_variables/DEFAULT_PEOPLE_LIST.pkl", "rb") as f:
-    DEFAULT_PEOPLE_LIST = pickle.load(f)
 
 with open("./data/config_variables/ELK_USER.pkl", "rb") as f:
     ELK_USER = pickle.load(f)
@@ -38,6 +28,18 @@ es = Elasticsearch(
     basic_auth=(ELK_USER, ELK_PASSWORD),
     timeout=30,
 )
+
+with open("./data/config_variables/BASE_URL.pkl", "rb") as f:
+    BASE_URL = pickle.load(f)
+
+with open("./data/config_variables/DEFAULT_OPTION.pkl", "rb") as f:
+    DEFAULT_OPTION = pickle.load(f)
+
+with open("./data/config_variables/DEFAULT_QUERY_ID.pkl", "rb") as f:
+    DEFAULT_QUERY_ID = pickle.load(f)
+
+with open("./data/config_variables/DEFAULT_PEOPLE_LIST.pkl", "rb") as f:
+    DEFAULT_PEOPLE_LIST = pickle.load(f)
 
 
 def get_raw_results(request_session):
@@ -203,16 +205,12 @@ def get_results(
 def semantic_search(
     request_session,
 ):
-    query = request_session.get("query", "")
+    query = normalizer.normalize(request_session.get("query", ""))
     option = request_session.get("option", DEFAULT_OPTION)
     with open("./data/config_variables/DEFAULT_CHECKBOXES.pkl", "rb") as f:
         DEFAULT_CHECKBOXES = pickle.load(f)
     checkboxes = request_session.get("checkboxes", DEFAULT_CHECKBOXES)
     results = None
-    # input_ids = tokenizer.encode(query, add_special_tokens=True, return_tensors="pt")
-    # with torch.no_grad():
-    #     output = model(input_ids)
-    # xq = output.last_hidden_state.mean(dim=1).squeeze().numpy()
     xq = model.encode([query]).astype(np.float32)
     if option == "report":
         if checkboxes[0] == "3":
@@ -255,11 +253,6 @@ def semantic_search(
         results = get_semantic_results(
             I[0], article_title_ids, xq, article_sentence_embeddings, option
         )
-    # et = datetime.datetime.now()
-    # elapsed_time = et - st  # cpu + io = full time
-    # print(f"Execution time: {elapsed_time} seconds")
-    # print(I)
-    # print(I[0])
     return get_results(
         results,
         request_session,

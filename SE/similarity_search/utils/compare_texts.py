@@ -1,8 +1,3 @@
-from hazm import Normalizer, word_tokenize, sent_tokenize
-from nltk.util import ngrams
-import pickle
-import collections
-import numpy as np
 import difflib
 
 
@@ -23,7 +18,7 @@ def compare_strings(str1, str2):
         non_matching_part = str1[i : match.a]
         if non_matching_part:
             output += concat_string(non_matching_part)
-            
+
         matching_part = str1[match.a : match.a + match.size]
         output += (
             "\n<span class='highlight'>" + concat_string(matching_part) + "</span>\n"

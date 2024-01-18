@@ -58,17 +58,17 @@ class Department(models.Model):
 
 class Report(models.Model):
     id = models.IntegerField(primary_key=True)
-    path = models.CharField(max_length=191, unique=True)
+    path = models.CharField(max_length=191, unique=True, null=True)
     title = models.TextField(null=True)
     publication_date = models.CharField(max_length=100, null=True)
     year = models.IntegerField(null=True)
     serial = models.CharField(max_length=100, null=True)
-    report_type = models.CharField(max_length=20, null=True)
-    publish_type = models.CharField(max_length=40, null=True)
+    report_type = models.CharField(max_length=25, null=True)
+    publish_type = models.CharField(max_length=45, null=True)
     dl_path = models.CharField(max_length=191, null=True, unique=True)
 
-    originality = models.BooleanField()
-    multiple_editions = models.BooleanField()
+    originality = models.BooleanField(null=True)
+    multiple_editions = models.BooleanField(null=True)
 
     departments = models.ManyToManyField(Department, related_name="report_departments")
 

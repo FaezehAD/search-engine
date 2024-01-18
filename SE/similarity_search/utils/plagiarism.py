@@ -70,7 +70,7 @@ def check_plagiarism(input_text, input_keywords_list):
     for i in id_count:
         result = get_report_by_id(int(i[0]))
         rate = 100.0 * np.round(i[1] / ngrams_count, 3)
-        if rate < 50.0:
+        if rate < 10.0:
             break
         persian_keywords, english_keywords, departments = get_report_details(result)
         id_percent.append(
